@@ -90,4 +90,10 @@
 	color: black;
 }
 
-
+.error {
+	position: relative;
+	display: block;
+	top: 15px;
+	text-align: center;
+	color: darkred;
+}

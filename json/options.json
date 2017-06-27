@@ -1,10 +1,68 @@
 [
 	{
 		"nume": "primul",
-		"analiti": ["1", "2", "3"]
+		"analiti": 
+		[
+			{
+				"nume": "1",
+				"tip": "0"
+			},
+			{
+				"nume": "2",
+				"tip": "1"
+			},
+			{
+				"nume": "3",
+				"tip": "1"
+			}
+		]
 	},
 	{
 		"nume": "al 2lea",
-		"analiti": ["a", "b", "c", "d"]
+		"analiti":
+		[
+			{
+				"nume": "a",
+				"tip": "0"
+			},
+			{
+				"nume": "b",
+				"tip": "1"
+			},
+			{
+				"nume": "c",
+				"tip": "0"
+			},
+			{
+				"nume": "d",
+				"tip": "1"
+			}
+		]
+	},
+	{
+		"nume": "al 3lea",
+		"analiti":
+		[
+			{
+				"nume": "a1",
+				"tip": "0"
+			},
+			{
+				"nume": "b2",
+				"tip": "1"
+			},
+			{
+				"nume": "c3",
+				"tip": "0"
+			},
+			{
+				"nume": "d4",
+				"tip": "0"
+			},
+			{
+				"nume": "e5",
+				"tip": "1"
+			}
+		]
 	}
 ]
