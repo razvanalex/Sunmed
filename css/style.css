@@ -1,0 +1,38 @@
+table, th, td{
+    border:1px solid black;
+    padding-left:5px;
+    padding-right:5px;
+    border-collapse: collapse;
+    vertical-align: middle;
+    text-align:center;
+}
+
+.highlight tbody tr:hover{
+    background-color:lightgray;
+}
+
+.btn{
+    width:50px;
+    text-align:center;
+    font-family:Arial;
+    color:white;
+    font-size: 16px;
+    background:#0066FF;
+    border:0px;
+}
+
+.NOTvisible{
+    visibility:hidden;
+    display:none;
+}
+
+.txtBox{
+    width:30px;
+    font-size:12px;
+    text-align:center;
+}
+
+.Error{
+    color:red;
+    font-size:20px;
+}

@@ -1,0 +1,93 @@
+.bkg {
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: absolute;
+	height: 120%;
+	width: 120%;
+	transform:translate(-10%, -10%);
+	background-color: lightblue;
+}
+
+.content {
+	position: relative;
+	top: 100px;
+	background-color: lightgreen;
+	margin: 0 auto;
+	border-radius: 20px;
+	border: 2px solid darkblue;
+	padding: 20px;
+	width: 300px;
+	height: auto;
+}
+
+.textbox {
+	position: relative;
+	display: block;
+	width: 75%;
+	height: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-top: 0px;
+	top: 10px;
+	background-color: lightgreen;
+	color: black;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-color: yellow;
+}
+
+.selectBlock {
+	position: relative;
+	top: 10px;
+	text-align: right;
+	margin: 0 auto;
+}
+
+.selector {
+	width: 150px;
+}
+
+.btn {
+	position: relative;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	top: 15px;
+	border: 1px solid white;
+	background-color: white;
+	width: 150px;
+	height: 30px;
+}
+
+.btn input:active, input:focus {
+	outline: none;
+	border-color: #0da7e6;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+	color: gray;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color: gray;
+	opacity: 1;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color: gray;
+	opacity: 1;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+	color: gray;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+	color: black;
+}
+
+

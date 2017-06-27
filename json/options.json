@@ -1,0 +1,10 @@
+[
+	{
+		"nume": "primul",
+		"analiti": ["1", "2", "3"]
+	},
+	{
+		"nume": "al 2lea",
+		"analiti": ["a", "b", "c", "d"]
+	}
+]
