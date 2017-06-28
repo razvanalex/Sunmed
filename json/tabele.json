@@ -1,0 +1,7 @@
+[
+    {
+        "nume": "Users",
+        "campuri": [ "id", "nume", "prenume", "username", "password", "permissions" ],
+        "alias_campuri": [ "ID", "Nume", "Prenume", "Nume Utilizator", "Parola", "Permisiuni" ]
+    }
+]

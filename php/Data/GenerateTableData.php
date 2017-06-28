@@ -1,26 +1,33 @@
 <?php
-	$sql = "SELECT nr_crt, ziua, luna, xi, executat, verificat FROM diestro;";
+    include_once('../../php/Session/ConnectServer.php');
+    $table = $_POST["tableName"];
+	$fields = $_POST["tableFields"];
+	$title = $_POST["tableAlias"];
+	
+	$sql_select = "";
+	$i = 0;
+	for (; $i < count($fields) - 1; $i++)
+	    $sql_select .= $fields[$i] . ', ';
+	$sql_select .= $fields[$i];
+	
+	$sql = "SELECT " . $sql_select . " FROM " . $table . ";";
 	$result = $conn->query($sql);
-    
+	
+	print "<thead><tr>";
+	for ($i = 0; $i < count($fields); $i++)
+	    print "<td>" . $title[$i] . "</td>";
+    print "<td>Editare</td>";
+	print "</tr></thead><tbody>";
 	if ($result->num_rows > 0) 
 	{
 		while ($db_field = $result->fetch_assoc() ) 
 		{
-			$nr_crt = $db_field["nr_crt"];
-			$ziua = $db_field["ziua"];
-			$luna = $db_field["luna"];
-			$xi = $db_field["xi"];
-			$executat = $db_field["executat"];
-			$verificat = $db_field["verificat"];
-
 			print "<tr>";
-			print "<td>$nr_crt</td>";	
-			print "<td>$ziua</td>";
-			print "<td>$luna</td>";
-			print "<td>$xi</td>";
-			print "<td>$executat</td>";
-			print "<td>$verificat</td>";
+			for ($i = 0; $i < count($fields); $i++)
+			    print "<td>" . $db_field[$fields[$i]] . "</td>";
+			print "<td><div class='edit EditUserBtn'></div></td>";
 			print "</tr>";
 		}
 	}
+	print "</tbody>";
 ?>

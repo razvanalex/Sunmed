@@ -1,5 +1,5 @@
 <?php
-    include('./php/Session/Login.php');
+    include_once('./php/Session/Login.php');
     $user = "";
     if(isset($_SESSION['login_user']))
         $user = $_SESSION['login_user'];

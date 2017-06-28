@@ -1,0 +1,279 @@
+html, body
+{
+    height: 100%;
+    width: 100%;
+}
+
+.bkg {
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: relative;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	padding: 0;
+    margin: 0;
+}
+
+.banner {
+    position: relative;
+    top: 20px;
+    width: 100%;
+    height: auto;
+}
+
+.pageTitle {
+    font-family: Arial;
+    font-size: 48px;
+    position: absolute;
+    display: block;
+    width: 100%;
+    text-align: center;
+    top: 0px;
+}
+
+.menu {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    top: 50px;
+}
+
+.tab {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    background-color: #2f90c5;
+    padding: 10px;
+    border: 2px solid blue;
+}
+
+.tabSelected {
+    background-color: lightblue;
+    border: 2px solid blue;
+    border-bottom: 2px solid lightblue;
+    z-index: 1;
+}
+
+.tabName {
+    
+}
+
+.content {
+    border: 2px solid blue;
+    background-color: lightblue;
+    height: 500px;
+    display: block;
+    position: relative;
+    top: 48px;
+}
+
+#softsContent {
+    visibility: visible;
+}
+#userContent{ 
+    visibility: visible;
+}
+
+.contentBody {
+    width: 100%;
+    height: 100%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-collapse: collapse;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.highlight {
+    background-color: lightgray;
+}
+
+#genTable {
+    position: relative;
+    top: 10px;
+    left: 10px;
+}
+
+.button {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    background-color: white;
+    margin: 10px;
+    border: 1px solid black;
+    min-width: 100px;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #eaeaea;
+}
+ 
+.button:active {
+    background-color: #cccccc;
+}
+
+.text {
+    font-family: Segoe UI, Arial;
+    font-size: 14px;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
+    pointer-events:none;
+}
+
+.window {
+    background-color: white;
+    border: 1px solid #26a6f2;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    width: 600px;
+    height: 400px;
+    visibility: hidden;
+    z-index: 10;
+}
+
+.topWindow {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #26a6f2;
+}
+
+.close {
+    position: relative;
+    display: inline;
+    float: right;
+    width: 45px;
+    height: 29px;
+    background-image: url("../Resources/close.png");
+    background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.close:hover {
+    background-image: url("../Resources/close-hover.png");
+}
+
+.title {
+    position: relative;
+    top: 4px;
+    left: 15px;
+    display: inline;
+    font-family: Segoe UI, Arial;
+    font-size: 14px;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
+    pointer-events:none;    
+}
+
+.edit {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    width: 20px;
+    height: 20px;
+    background-image: url("../Resources/edit-icon.png");
+    background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.textbox {
+	position: relative;
+	display: inline-block;
+	width: 190px;
+	height: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-top: 0px;
+	background-color: transparent;
+	color: black;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-color: black;
+	top: -10px;
+}
+
+.textbox input:active, input:focus {
+	outline: none;
+	border-color: #0da7e6;
+}
+
+.panel {
+    border: 1px solid gray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    margin: 10px;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.panelTitle {
+    position: relative;
+    top: -20px;
+    background-color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: inline-block;
+}
+
+#inAddtxt {
+    float: left;
+    width: 250px;
+    position: relative;
+    left: 10px;
+}
+
+#Permstxt {
+    position: relative;
+    float: left;
+    width: 250px;
+    height: 240px;
+    left: 5px;
+}
+
+.panelContent1 {
+    text-align: center;
+}
+
+.panelContent2 {
+    overflow: auto;
+    height: 100%;
+    position: relative;
+    top: -10px;
+}
+
+.chkbox {
+    position: relative;
+    display: inline-block;
+}
+
+#AddBtn{
+    float: right;
+    right: 10px;
+}
+
+#CancelBtn{
+    float: right;
+}

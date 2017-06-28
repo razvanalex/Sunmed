@@ -15,7 +15,7 @@
         }
         else
         {
-            if(!@include('./php/Session/ConnectServer.php'))
+            if(!@include_once('./php/Session/ConnectServer.php'))
                 $error = " Error while connecting... ";
                
             // Define variables
@@ -40,9 +40,10 @@
                     {
                         $_SESSION['login_user'] = $username; // Initializing Session
                         
-                        // --------- redirect here -------------
-                        // header('Location: ./index.php');
-                        
+                        // --------- redirect to the right page ---------
+                        if ($username != "admin")
+                            header('Location: ./php/Session/Users/UserPage.php?type=' . $tip_tabel);
+                        else header('Location: ./php/Session/Admin/AdminPage.php');
                     }
                     else $error = " Invalid Password or Username ";
                 }
