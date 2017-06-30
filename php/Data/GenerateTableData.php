@@ -25,7 +25,9 @@
 			print "<tr>";
 			for ($i = 0; $i < count($fields); $i++)
 			    print "<td>" . $db_field[$fields[$i]] . "</td>";
-			print "<td><div class='edit EditUserBtn'></div></td>";
+			if ($db_field["username"] == "admin")
+				print "<td><div class='edit EditUserBtn'></div></td>";
+			else print "<td><div class='edit EditUserBtn'></div><div class='remove RemoveUserBtn'></div></td>";
 			print "</tr>";
 		}
 	}

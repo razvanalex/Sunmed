@@ -30,7 +30,7 @@
                     <span class="tabName">Programe</span>
                 </div>
             </div>
-    
+
             <div class="content">
                 <div id="userContent" class="contentBody">
                     <div class="button" id="AddUserBtn"><span class="text">Adauga utilizator</span></div>
@@ -46,24 +46,34 @@
                                 <div class="panel" id="inAddtxt">
                                     <span class="panelTitle">Informatii personale</span>
                                     <div class="panelContent1">
-                                        <input class="textbox" type="text" name="nume" placeholder="Nume"/>
-                                        <input class="textbox" type="text" name="prenume" placeholder="Prenume"/>
-                                        <input class="textbox" type="text" name="username" placeholder="Nume de utilizator"/>
-                                        <input class="textbox" type="password" name="password" placeholder="Parola"/>
-                                        <input class="textbox" type="password" name="confirmPassword" placeholder="Confirma Parola"/>
+                                        <input id="AddNume" class="textbox" type="text" name="nume" placeholder="Nume"/>
+                                        <input id="AddPrenume" class="textbox" type="text" name="prenume" placeholder="Prenume"/>
+                                        <input id="AddUsername" class="textbox" type="text" name="username" placeholder="Nume de utilizator"/>
+                                        <input id="AddPassword" class="textbox" type="password" name="password" placeholder="Parola"/>
+                                        <input id="AddConfPass" class="textbox" type="password" name="confirmPassword" placeholder="Confirma Parola"/>
                                     </div>
                                 </div>
                                 <div class="panel" id="Permstxt">
                                     <span class="panelTitle">Permisiuni</span>
                                     <div class="panelContent2">
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 1</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 2</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 3</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 4</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 5</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 6</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 1</span>
-                                        <input class="chkbox" type="checkbox" name="" vlaue=""/><span class="chkbox" >Program 2</span>
+                                    <?php
+                                        $string = file_get_contents("../../../json/options.json");
+                                        $programs = json_decode($string, true);
+                                        
+                                        for ($i = 0; $i < count($programs); $i++)
+                                            foreach ($programs[$i] as $key1 => $val1)
+                                                if ($key1 == "nume")
+                                                {
+                                                    foreach ($programs[$i][analiti] as $key2 => $val2)
+                                                        foreach ($val2 as $key3 => $val3)
+                                                            if ($key3 == "nume")
+                                                            {
+                                                                print "<div class='chkbox'>
+                                                                        <input class='permissions' type='checkbox'/><span>" . $val1 . " " . $val3  . "</span>
+                                                                    </div>";
+                                                            }
+                                                }
+                                    ?>
                                     </div>
                                 </div>
                                 <div class="button" id="AddBtn"><span class="text">Adauga</span></div>
@@ -78,11 +88,86 @@
                             <div class="close" id="closeEditUser"></div>
                         </div>
                         <div class="contentWindow">
-                            
+                            <form id="EditForm">
+                                <div class="panel" id="inAddtxt">
+                                    <span class="panelTitle">Informatii personale</span>
+                                    <div class="panelContent1">
+                                        <input class="textbox" id="nume" type="text" name="nume" placeholder="Nume"/>
+                                        <input class="textbox" id="prenume" type="text" name="prenume" placeholder="Prenume"/>
+                                        <input class="textbox" id="username" type="text" name="username" placeholder="Nume de utilizator"/>
+                                        <div class="panel">
+                                            <span class="panelTitle">Schimbare parola</span>
+                                            <div class="panelContent3">
+                                                <input class="textbox" id="password" name="password" type="password" name="password" placeholder="Parola"/>
+                                                <input class="textbox" id="confPass" name="confirmPassword" type="password" name="confirmPassword" placeholder="Confirma Parola"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel" id="Permstxt">
+                                    <span class="panelTitle">Permisiuni</span>
+                                    <div class="panelContent2">
+                                    <?php
+                                        $string = file_get_contents("../../../json/options.json");
+                                        $programs = json_decode($string, true);
+                                        
+                                        for ($i = 0; $i < count($programs); $i++)
+                                            foreach ($programs[$i] as $key1 => $val1)
+                                                if ($key1 == "nume")
+                                                {
+                                                    foreach ($programs[$i][analiti] as $key2 => $val2)
+                                                        foreach ($val2 as $key3 => $val3)
+                                                            if ($key3 == "nume")
+                                                            {
+                                                                print "<div class='chkbox'>
+                                                                        <input class='permissions' type='checkbox'/><span>" . $val1 . " " . $val3  . "</span>
+                                                                    </div>";
+                                                            }
+                                                }
+                                    ?>
+                                    </div>
+                                </div>
+                                <div class="button" id="EditBtn"><span class="text">Editare</span></div>
+                                <div class="button" id="CancelEditBtn"><span class="text">Anulare</span></div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                     <div class="window warning" id="RemoveUserWnd">
+                        <div class="topWindow">
+                            <span class="title">Sterge utilizator</span>
+                            <div class="close" id="closeRemoveUser"></div>
+                        </div>
+                        <div class="contentWindow">
+                            <div class="textConfirm">
+                                <span id="confirmRemove"></span>
+                            </div>
+                            <div class="btnConfirm">
+                                <div class="button" id="CancelRemoveBtn"><span class="text">Anulare</span></div>
+                                <div class="button" id="RemoveBtn"><span class="text">Sterge</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="window info" id="InfoWnd">
+                        <div class="topWindow">
+                            <span class="title">Info</span>
+                            <div class="close" id="closeInfoUser"></div>
+                        </div>
+                        <div class="contentWindow">
+                            <div class="textConfirm">
+                                <span id="InfoText"></span>
+                            </div>
+                            <div class="btnConfirmInfo">
+                                <div class="button" id="infoOkBtn"><span class="text">Ok</span></div>
+                            </div>
                         </div>
                     </div>
                     
                 </div>
+                
+                
+                <!-- Programe -->
                 <div id="softsContent" class="contentBody">
                     
                 </div>
