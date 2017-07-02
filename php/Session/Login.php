@@ -8,11 +8,6 @@
         {
             $error = " Invalid Password or Username ";
         }
-        else if ($_POST['analizor_text'] == "Select" || $_POST['analit_text'] == "Select"
-            || $_POST['tip_tabel'] == -1)
-        {
-            $error = " Invalid selected data! ";
-        }
         else
         {
             if(!@include_once('./php/Session/ConnectServer.php'))
@@ -21,8 +16,6 @@
             // Define variables
             $username = $_POST['username'];
             $password = $_POST['password'];
-            $analizor = $_POST['analizor_text'];
-            $analit = $_POST['analit_text'];
             $tip_tabel = $_POST['tip_tabel'];
             
             // To protect MySQL injection for Security purpose

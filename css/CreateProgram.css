@@ -1,0 +1,226 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+.foreground_window {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 100%;
+    height: 100%;
+    
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+    -moz-filter: blur(3px);
+    -o-filter: blur(3px);
+    -ms-filter: blur(3px);
+    
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
+    pointer-events:none;
+}
+
+#InitWorkspace {
+    top: 40px;
+}
+
+.section {
+    position: relative;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    width: 560px;
+    height: 250px;
+    padding: 20px;
+}
+
+#next {
+    float: right;
+    right: 0px;
+    margin-right: 0px;
+}
+
+#create {
+    float: right;
+    right: 0px;
+    margin-right: 0px;
+}
+
+#selection {
+    position: relative;
+    border: 1px solid gray;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 5px;
+}
+
+#bottomText {
+    position: relative;
+    margin-left: 0px;
+    top: 5px;
+    display: inline-block;
+}
+
+#topText {
+    position: relative;
+    top: 0px;
+    margin-bottom: 10px;
+    font-family: Segoe UI, Arial;
+}
+
+#intrTxt {
+    position: relative;
+    top: 10px;
+    margin-right: 2px;
+    font-family: Segoe UI, Arial;
+}
+
+#numeSoft {
+    font-family: Segoe UI, Arial;
+    top: 10px;
+}
+
+.itemSoft {
+    position: relative;
+    display: table;
+    height: 60px;
+    font-family: Segoe UI, Arial;
+}
+
+.itemSoft:hover{
+    background-color: #a0c5e8;
+}
+
+.selected {
+    background-color: #88a8c7;
+}
+
+.imageField {
+    position: relative;
+    display: table-cell;
+    width: 100px;
+}
+
+.imageField img {
+    position: relative;
+    margin: 0 auto;
+    vertical-align: middle;
+}
+
+.nameField {
+    position: relative;
+    display: table-cell;
+    width: 150px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.descriptionField {
+    position: relative;
+    display: table-cell;
+    text-align: justify;
+    vertical-align: middle;
+    padding: 10px
+}
+
+#softContent {
+    position: absolute;
+    display: table;
+    top: 0px;
+    bottom: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+#topMenuBar {
+    position: relative;
+    display: table-row;
+    top: 0px;
+    width: 100%;
+    height: 30px;
+    background-color: green;
+}
+
+#creationBody {
+    position: relative;
+    display: table;
+    height: 100%;
+    width: 100%;
+    vertical-align: top;
+}
+
+#toolbox {
+    position: relative;
+    width: 200px;
+    background-color: lightgray;
+    display: table-cell;
+    font-family: Segoe UI, Arial
+}
+
+#preview {
+    position: relative;
+    background-color: white;
+    display: table-cell;
+    width: auto;
+    overflow: auto;
+}
+
+#properties {
+    position: relative;
+    background-color: lightgray;
+    display: table-cell;
+    font-family: Segoe UI, Arial;
+    width: 200px;
+}
+
+.topBar {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: gray;
+    text-align: center;
+}
+
+#topBar span {
+    vertical-align: middle;
+}
+
+#contentToolbox {
+    overflow-y: auto;
+    list-style-type: none;
+    list-style-position: inside;
+    padding: 0px;
+    margin: 0px;
+}
+
+#contentProperties {
+    overflow-y: auto;
+    list-style-type: none;
+    list-style-position: inside;
+    padding: 0px;
+    margin: 0px;
+}
+
+.toolItem {
+    height: 40px;
+    padding-left: 10px;
+    background-color: #b9b9b9;
+    position: relative;
+    padding-top: 10px;
+}
+
+.toolItem:hover {
+    background-color: lightblue;
+}

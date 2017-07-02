@@ -12,6 +12,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="../../../css/admin.css" type="text/css" />
+        <link rel="stylesheet" href="../../../css/windows.css" type="text/css" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     </head>
@@ -30,8 +31,10 @@
                     <span class="tabName">Programe</span>
                 </div>
             </div>
-
+        
             <div class="content">
+                
+                <!-- Utilizatori -->
                 <div id="userContent" class="contentBody">
                     <div class="button" id="AddUserBtn"><span class="text">Adauga utilizator</span></div>
                     <table id='genTable'></table>
@@ -166,10 +169,12 @@
                     
                 </div>
                 
-                
                 <!-- Programe -->
                 <div id="softsContent" class="contentBody">
-                    
+                    <div class="button" id="CreateProgram"><span class="text">Creeaza Program</span></div>
+                    <div id="Programs">
+                        
+                    </div>
                 </div>
             </div>
         </div>

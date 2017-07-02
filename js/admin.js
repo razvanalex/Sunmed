@@ -1,6 +1,6 @@
-function printTable(db, index, location) {
-    var table = db[index];
-    console.log();
+function printTable(db, indexDB, indexTab, location) {
+    var table = db[indexDB].tabele[indexTab];
+
     $.ajax({
         url: "../../Data/GenerateTableData.php",
         method: 'POST',
@@ -28,9 +28,9 @@ function printTable(db, index, location) {
 }
 
 function tabs() {
-        $.getJSON( "../../../json/tabele.json", function(db) {
+    $.getJSON( "../../../json/tabele.json", function(db) {
         $("#softsContent").hide();
-        printTable(db, 0, "#genTable");
+        printTable(db, 0, 0, "#genTable");
 
         $("#users").click(function() {
             if (!$("#users").hasClass("tabSelected")) {
@@ -101,6 +101,11 @@ function buttons() {
     
     $("#infoOkBtn").on("click", function(){
         $("#InfoWnd").css("visibility", "hidden");
+    });    
+    
+    // Create Soft
+    $("#CreateProgram").on("click", function(){
+       window.location.href = "../../Databases/CreateProgram.php";
     });    
 }
 

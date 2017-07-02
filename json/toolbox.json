@@ -1,0 +1,7 @@
+[
+    {
+        "nume": "Eticheta",
+        "cod": "<span class='label'>#TEXT#</span>",
+        "proprietati": [ "id",  "text", "color", "font", "size", "position" ]
+    }
+]

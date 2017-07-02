@@ -65,6 +65,7 @@ html, body
     border: 2px solid blue;
     background-color: lightblue;
     min-height: 500px;
+    width: auto;
     padding-bottom: 30px;
     display: block;
     position: relative;
@@ -74,6 +75,7 @@ html, body
 #softsContent {
     visibility: visible;
 }
+
 #userContent{ 
     visibility: visible;
 }
@@ -102,90 +104,6 @@ table, th, td {
     left: 10px;
 }
 
-.button {
-    position: relative;
-    display: inline-block;
-    padding: 10px;
-    background-color: white;
-    margin: 10px;
-    border: 1px solid black;
-    min-width: 100px;
-    text-align: center;
-}
-
-.button:hover {
-    background-color: #eaeaea;
-}
- 
-.button:active {
-    background-color: #cccccc;
-}
-
-.text {
-    font-family: Segoe UI, Arial;
-    font-size: 14px;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none;   /* Chrome/Safari/Opera */
-    -khtml-user-select: none;    /* Konqueror */
-    -moz-user-select: none;      /* Firefox */
-    -ms-user-select: none;       /* Internet Explorer/Edge */
-    user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
-    pointer-events:none;
-}
-
-.window {
-    background-color: white;
-    border: 1px solid #26a6f2;
-    position: absolute;
-    top: 10px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0 auto;
-    width: 600px;
-    height: 400px;
-    visibility: hidden;
-    z-index: 10;
-}
-
-.topWindow {
-    position: relative;
-    width: 100%;
-    height: 30px;
-    background-color: #26a6f2;
-}
-
-.close {
-    position: relative;
-    display: inline;
-    float: right;
-    width: 45px;
-    height: 29px;
-    background-image: url("../Resources/close.png");
-    background-repeat: no-repeat;
-	background-size: cover;
-}
-
-.close:hover {
-    background-image: url("../Resources/close-hover.png");
-}
-
-.title {
-    position: relative;
-    top: 4px;
-    left: 15px;
-    display: inline;
-    font-family: Segoe UI, Arial;
-    font-size: 14px;
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none;   /* Chrome/Safari/Opera */
-    -khtml-user-select: none;    /* Konqueror */
-    -moz-user-select: none;      /* Firefox */
-    -ms-user-select: none;       /* Internet Explorer/Edge */
-    user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
-    pointer-events:none;    
-}
-
 .edit {
     position: relative;
     display: inline-block;
@@ -195,48 +113,6 @@ table, th, td {
     background-image: url("../Resources/edit-icon.png");
     background-repeat: no-repeat;
 	background-size: cover;
-}
-
-.textbox {
-	position: relative;
-	display: inline-block;
-	width: 190px;
-	height: 30px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
-	margin-top: 0px;
-	background-color: transparent;
-	color: black;
-	border-top: none;
-	border-left: none;
-	border-right: none;
-	border-color: black;
-	top: -10px;
-}
-
-.textbox input:active, input:focus {
-	outline: none;
-	border-color: #0da7e6;
-}
-
-.panel {
-    border: 1px solid gray;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    margin: 10px;
-    margin-top: 20px;
-    display: inline-block;
-}
-
-.panelTitle {
-    position: relative;
-    top: -20px;
-    background-color: white;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: inline-block;
 }
 
 #inAddtxt {
@@ -296,40 +172,13 @@ table, th, td {
 	background-size: cover;
 }
 
-.warning {
-    width: 300px;
-    height: 150px;
-}
-
-.textConfirm {
-    position: relative;
-    display: block;
-    text-align: center;
-    height: 50px;
-}
-
-.btnConfirm {
-    position: relative;
-    display: block;
-}
-
 #confirmRemove {
     position: relative;
     top: 20px;
 }
 
-.info {
-    width: 300px;
-    height: 150px;
-}
-
 #InfoText {
     position: relative;
     top: 20px;
-    text-align: center;
-}
-
-.btnConfirmInfo {
-    position: relative;
     text-align: center;
 }

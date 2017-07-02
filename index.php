@@ -17,16 +17,6 @@
 			<form method="POST" action="">
 				<input class="textbox" type="text" name="username" placeholder="username">
 				<input class="textbox" type="password" name="password" placeholder="password">
-				<table class="selectBlock">
-					<tr>
-						<td><span class="description">Analizor: </span></td>
-						<td><select name="analizor" class="selector" id="analizor"></select></td>
-					</tr>
-					<tr>
-						<td><span class="description">Analit: </span></td>
-						<td><select name="analit" class="selector" id="analit"></select></td>
-					</tr>
-				</table>
 				
 				<?php 
 					echo '<span class="error">' . $error . '</span>';
@@ -42,8 +32,8 @@
 			</form>
 		</div>
 		 
-		<!-- Scripts -->
-		<script src="./js/options.js"></script>
+		<!-- Scripts
+		<script src="./js/options.js"></script> -->
 		
 	</body>
 </html>
