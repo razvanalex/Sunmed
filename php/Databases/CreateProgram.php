@@ -12,7 +12,7 @@
     </head>
     <body>
 
-        <div class="window visible" id="InitWorkspace">
+        <div class="window hidden" id="InitWorkspace">
             <div class="topWindow">
                 <span class="title">Creare Program</span>
                 <div class="close" id="closeInit"></div>
@@ -45,9 +45,18 @@
             </div>
         </div>
 
-        <div id="softContent" class="foreground_window">
+        <div id="softContent" class="">
             <div id="topMenuBar">
-                menu
+                <ul id="menuBar">
+                    <li id="fisierText">Fisier
+                        <ul id="fisierContent">
+                            <li id="newProgram">Nou</li>
+                            <li id="openProgram">Deschide</li>
+                            <li id="exitProgram">Iesire</li>
+                        </ul>
+                    </li>
+                    <li>Previzualizare</li>
+                </ul>
             </div>
             <div id="creationBody">
                 <div id="toolbox">
@@ -56,7 +65,8 @@
                     </div>
                     <ul id="contentToolbox"></ul>
                 </div>
-                <div id="preview"></div>
+                <div id="preview">
+                </div>
                 <div id="properties">
                     <div class="topBar">
                         <span>Proprietati</span>
@@ -66,6 +76,7 @@
             </div>
         </div>
         
+        <script type="text/javascript" src="../../js/jscolor.js"></script>
         <script type="text/javascript" src="../../js/createProgram.js"></script>
     </body>
 </html>

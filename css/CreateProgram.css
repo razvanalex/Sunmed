@@ -25,7 +25,7 @@ body {
     -moz-user-select: none;      /* Firefox */
     -ms-user-select: none;       /* Internet Explorer/Edge */
     user-select: none;           /* Non-prefixed version, currently supported by any browser but < IE9 */
-    pointer-events:none;
+    pointer-events: none;
 }
 
 #InitWorkspace {
@@ -150,8 +150,53 @@ body {
     top: 0px;
     width: 100%;
     height: 30px;
-    background-color: green;
+    background-color: #272727;
+    color: lightgray;
+    font-family: Segoe UI, Arial;
 }
+
+#menuBar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: inline-block;
+}
+
+#menuBar li {
+    float: left;
+    padding: 5px 10px;
+    cursor: default;
+}
+
+#menuBar li:hover {
+    background-color: #464545;
+}
+
+#fisierContent {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0px;
+    background-color: #272727;
+    list-style-type: none;
+    list-style-position: inside;
+    z-index: 10;
+    padding-left:0;
+    width: 200px;
+}
+
+#fisierText:hover #fisierContent {
+    display: block;
+}
+
+#fisierContent li {
+    display: block;
+    padding: 5px 10px;
+    width: 180px;
+    cursor: default;
+}
+
 
 #creationBody {
     position: relative;
@@ -159,6 +204,7 @@ body {
     height: 100%;
     width: 100%;
     vertical-align: top;
+    table-layout: fixed;
 }
 
 #toolbox {
@@ -174,6 +220,7 @@ body {
     background-color: white;
     display: table-cell;
     width: auto;
+    height: 100%;
     overflow: auto;
 }
 
@@ -182,7 +229,9 @@ body {
     background-color: lightgray;
     display: table-cell;
     font-family: Segoe UI, Arial;
-    width: 200px;
+    width: 300px;
+    height: 100%;
+    padding-bottom: 30px;
 }
 
 .topBar {
@@ -198,7 +247,6 @@ body {
 }
 
 #contentToolbox {
-    overflow-y: auto;
     list-style-type: none;
     list-style-position: inside;
     padding: 0px;
@@ -206,21 +254,130 @@ body {
 }
 
 #contentProperties {
-    overflow-y: auto;
     list-style-type: none;
     list-style-position: inside;
     padding: 0px;
     margin: 0px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .toolItem {
     height: 40px;
-    padding-left: 10px;
     background-color: #b9b9b9;
     position: relative;
-    padding-top: 10px;
+    display: table;
+    width: 100%;
 }
 
 .toolItem:hover {
     background-color: lightblue;
+}
+
+.ItemSelected {
+    border: 1px dashed blue;
+}
+
+
+.propText {
+    display: table-cell;
+    width: 40%;
+    border-right: 1px solid black;
+    position: relative;
+    vertical-align: middle;
+    padding-left: 10px;
+}
+
+.propVal {
+    display: table-cell;
+    position: relative;
+    padding-left: 5px;
+    vertical-align: middle;
+    width: 60%;   /* solve overflow */
+}
+
+.propVal span {
+    min-width: 50px;
+}
+
+.propVal input, select {
+    width: 100%;
+    height: 80%;
+    font-family: Segoe UI, Arial;
+    font-size: 16px;
+}
+
+.propVal input:focus {
+    border: none;
+}
+
+.remove {
+    text-align: center;
+    background-color: #b76b6b;
+    height: 40px;
+}
+
+.remove:hover {
+    background-color: #bd3030;
+    cursor: default;
+}
+
+.remove span {
+    position: relative;
+    top: 8px;
+}
+
+.CreateDB {
+    text-align: center;
+    background-color: #8eacb7;
+    height: 40px;
+}
+
+.CreateDB:hover {
+    background-color: #37a6d0;
+    cursor: default;
+}
+
+.CreateDB span {
+    position: relative;
+    top: 8px;
+}
+
+.CampuriUl li {
+    list-style-type: none;
+    list-style-position: inside;
+    margin: 0;
+    display: block;
+    padding: 10px;
+    height: 10px;
+    width: 135px;
+    overflow: hidden;
+}
+
+.CampuriUl li:hover {
+    background-color: lightblue;
+}
+
+.CampuriUl input { 
+    height: auto;
+    width: auto;
+}
+
+.CampuriUl ul {
+    position: absolute;
+    top: 40px;
+    z-index: 10;
+    background-color: white;
+    list-style-type: none;
+    padding: 0px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.label {
+    padding-left: 2px;
+    padding-right: 2px;
+    display: table;
+    position: absolute;
 }
