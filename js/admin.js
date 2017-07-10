@@ -6,6 +6,7 @@ function printTable(db, indexDB, indexTab, location) {
         method: 'POST',
         dataType: 'html',
         data: {
+            DBName: "sunmed",
             tableName: table.nume,
             tableFields: table.campuri,
             tableAlias: table.alias_campuri

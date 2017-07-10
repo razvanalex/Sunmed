@@ -145,6 +145,38 @@ function applyProp(data, place) {
                 $(id).css("height", "auto");
             else $(id).css("height", data.Proprietati[prop] + "px");
         }
+        else if (prop == "Culoare Antet"){
+            $(id + " thead").css("color", "#" + data.Proprietati[prop]);
+        }
+        else if (prop == "Culoare Text"){
+            $(id + " tbody").css("color", "#" + data.Proprietati[prop]);
+        }
+        else if (prop == "Font Antet"){
+            $(id + " thead").css("font-family", data.Proprietati[prop]);
+        }
+        else if (prop == "Font Text"){
+            $(id + " tbody").css("font-family", data.Proprietati[prop]);
+        }
+        else if (prop == "Dimensiune Antet")
+            $(id + " thead").css("font-size", data.Proprietati[prop] + "px");
+        else if (prop == "Dimensiune Text")
+            $(id + " tbody").css("font-size", data.Proprietati[prop] + "px");
+        else if (prop == "Bold Antet")
+            $(id + " thead").css("font-weight", data.Proprietati[prop]);
+        else if (prop == "Bold Text")
+            $(id + " tbody").css("font-weight", data.Proprietati[prop]);
+        else if (prop == "Bordura Orizontal") {
+            $(id + " tbody tr, td").css("border-bottom", data.Proprietati[prop]);
+            $(id + " tbody tr, td").css("border-top", data.Proprietati[prop]);
+            $(id + " thead, tbody").css("border-left", data.Proprietati[prop]);
+            $(id + " thead, tbody").css("border-right", data.Proprietati[prop]);
+        }
+        else if (prop == "Bordura Vertical") {
+            $(id + " table, tr, td").css("border-left", data.Proprietati[prop]);
+            $(id + " table, tr, td").css("border-right", data.Proprietati[prop]);
+            $(id + " thead, tbody").css("border-top", data.Proprietati[prop]);
+            $(id + " thead, tbody").css("border-bottom", data.Proprietati[prop]);
+        }
         else if (prop == "Pozitie") {
             $(id).css("position", "absolute");
             $(id).css("left", data.Proprietati[prop].X + "px");
@@ -155,64 +187,68 @@ function applyProp(data, place) {
 
 function displayProp(obj, array) {
     var bool = ["Da", "Nu"];
-    var fonts = ["Arial", "Arial Black", "Arial Narrow", "Calibri", "Candara", "Century Gothic", "Franklin Gothic Medium", 
-        "Helvetica", "Lucida Grande", "Optima", "Segoe UI", "Tahoma", "Trebuchet MS", "Verdana", 
-        "Book Antiqua", "Calisto MT", "Cambria", "Georgia", "Lucida Bright", "Palatino", "Perpetua", "Rockwell", 
-        "Times New Roman", "Baskerville", "Consolas", "Courier New", "Lucida Console", "Lucida Sans Typewriter", 
-        "Copperplate", "Papyrus", "Brush Script MT" ];
+    var fonts = ["Arial", "Arial Black", "Arial Narrow", "Calibri", "Candara", 
+        "Century Gothic", "Franklin Gothic Medium", "Helvetica", "Lucida Grande", 
+        "Optima", "Segoe UI", "Tahoma", "Trebuchet MS", "Verdana", "Book Antiqua",
+        "Calisto MT", "Cambria", "Georgia", "Lucida Bright", "Palatino", "Perpetua", 
+        "Rockwell", "Times New Roman", "Baskerville", "Consolas", "Courier New", 
+        "Lucida Console", "Lucida Sans Typewriter", "Copperplate", "Papyrus", 
+        "Brush Script MT" ];
     var textAlign = ["Stanga", "Dreapta", "Centrat", "Stanga-Dreapta"];
     var verticalAlign = ["Sus", "Mijloc", "Jos"];
     var DBs = [ "Nu" ];
     var Tables = [ "Nu" ];
-    
-    $("#contentProperties").empty();
+    var Style = [ "Stilul 1", "Stilul 2", "Stilul 3"];
+    var propertiesTab = $("#contentProperties ul");
+     
+    propertiesTab.empty();
     
     for(var prop in obj.Proprietati) {
         var val = obj.Proprietati[prop];
         var color;
-        var ID = obj.Proprietati.ID + prop;
+        var ID = obj.Proprietati.ID + prop.replace(/\s/g,'');
         
         if (!isObject(val)) {
             if (prop == "Text") {
-                $("#contentProperties").append("<li class='convertSpanInput toolItem'>" +
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
                     ID +"' value='" + val + "'/></div></li>");
             }
             
             else if (prop == "Fundal") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     `<div class='propVal'><input class="propInput jscolor" id='` + 
                     ID +"' value='" + val + "'/></div></li>");
                     
-                var input = $("#contentProperties").find("#" + ID)[0];
+                var input = propertiesTab.find("#" + ID)[0];
                 color = new jscolor(input);
                 color.borderColor = "#FFF";
                 color.backgroundColor = "#666";
             }
             
             else if (prop == "Culoare") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     `<div class='propVal'><input class="propInput jscolor" id='` + 
                     ID +"' value='" + val + "'/></div></li>");
                     
-                var input = $("#contentProperties").find("#" + ID)[0];
+                var input = propertiesTab.find("#" + ID)[0];
                 color = new jscolor(input);
                 color.borderColor = "#FFF";
                 color.backgroundColor = "#666";
             }
             
             else if (prop == "Dimensiune") {
-                $("#contentProperties").append("<li class='convertSpanInput toolItem'>" +
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
                 ID +"' value='" + val + "'/></div></li>");
             }
             
             else if (prop == "Font") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><select id='" + ID + "'></select></div></li>");
                     
@@ -221,80 +257,200 @@ function displayProp(obj, array) {
             }
             
             else if (prop == "Bold") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><select id='" + ID + "'></select></div></li>");
                 addOptions("#" + ID, obj, obj.Proprietati.Bold, bool);
             }
             
             else if (prop == "Italic") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><select id='" + ID + "'></select></div></li>");
                 addOptions("#" + ID, obj, obj.Proprietati.Italic, bool);
             }
             
             else if (prop == "Latime") {
-                $("#contentProperties").append("<li class='convertSpanInput toolItem'>" +
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
                     ID +"' value='" + val + "'/></div></li>");
             }
             
             else if (prop == "Inaltime") {
-                $("#contentProperties").append("<li class='convertSpanInput toolItem'>" +
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
                     ID +"' value='" + val + "'/></div></li>");
             }
             
             else if (prop == "Aliniere orizontal") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + obj.Proprietati.ID + "orizontal" + "'></select></div></li>");
-                addOptions("#" + obj.Proprietati.ID + "orizontal", obj, obj.Proprietati[prop], textAlign);
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                addOptions("#" + ID, obj, obj.Proprietati[prop], textAlign);
             }
             
             else if (prop == "Aliniere vertical") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + obj.Proprietati.ID + "vertical" + "'></select></div></li>");
-                addOptions("#" + obj.Proprietati.ID + "vertical", obj, obj.Proprietati[prop], verticalAlign);
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                addOptions("#" + ID, obj, obj.Proprietati[prop], verticalAlign);
             }
             
             else if (prop == "Baza de date") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + obj.Proprietati.ID + "DBs" + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
                 AddDBs(obj, prop, DBs);
             }
                         
             else if (prop == "Tabel") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + obj.Proprietati.ID + "Tables" + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
                 AddTables(obj, prop, Tables);
             }
             
+            else if (prop == "Culoare Antet") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    `<div class='propVal'><input class="propInput jscolor" id='` + 
+                    ID + "' value='" + val + "'/></div></li>");
+                    
+                var input = propertiesTab.find("#" + ID)[0];
+                color = new jscolor(input);
+                color.borderColor = "#FFF";
+                color.backgroundColor = "#666";
+            }
+            
+            else if (prop == "Culoare Text") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    `<div class='propVal'><input class="propInput jscolor" id='` + 
+                    ID + "' value='" + val + "'/></div></li>");
+                    
+                var input = propertiesTab.find("#" + ID)[0];
+                color = new jscolor(input);
+                color.borderColor = "#FFF";
+                color.backgroundColor = "#666";
+            }
+            
+            else if (prop == "Font Antet" || prop == "Font Text") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    
+                fonts.sort();
+                addOptions("#" + ID, obj, obj.Proprietati[prop], fonts);
+            }
+            
+            else if (prop == "Dimensiune Antet") {
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><span></span><input class='propInput' id='" + 
+                    ID +"' value='" + val + "'/></div></li>");
+            }
+            
+            else if (prop == "Dimensiune Text") {
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><span></span><input class='propInput' id='" + 
+                    ID +"' value='" + val + "'/></div></li>");
+            }
+            
+            else if (prop == "Bold Antet") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                addOptions("#" + ID, obj, obj.Proprietati[prop], bool);
+            }
+            
+            else if (prop == "Bold Text") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                addOptions("#" + ID, obj, obj.Proprietati[prop], bool);
+            }
+            
+            else if (prop == "Bordura Orizontal") {
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><span></span><input class='propInput' id='" + 
+                    ID +"' value='" + val + "'/></div></li>");
+            }
+            
+            else if (prop == "Bordura Vertical") {
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><span></span><input class='propInput' id='" + 
+                    ID +"' value='" + val + "'/></div></li>");
+            }
+            
+            else if (prop == "Stil") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    
+                Style.sort();
+                addOptions("#" + ID, obj, obj.Proprietati[prop], Style);
+            }
+            
+            else if (prop == "Culoare 1") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    `<div class='propVal'><input class="propInput jscolor" id='` + 
+                    ID + "' value='" + val + "'/></div></li>");
+                    
+                var input = propertiesTab.find("#" + ID)[0];
+                color = new jscolor(input);
+                color.borderColor = "#FFF";
+                color.backgroundColor = "#666";
+            }
+            
+            else if (prop == "Culoare 2") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    `<div class='propVal'><input class="propInput jscolor" id='` + 
+                    ID + "' value='" + val + "'/></div></li>");
+                    
+                var input = propertiesTab.find("#" + ID)[0];
+                color = new jscolor(input);
+                color.borderColor = "#FFF";
+                color.backgroundColor = "#666";
+            }
+            
+            else if (prop == "Culoare 3") {
+                propertiesTab.append("<li class='toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    `<div class='propVal'><input class="propInput jscolor" id='` + 
+                    ID + "' value='" + val + "'/></div></li>");
+                    
+                var input = propertiesTab.find("#" + ID)[0];
+                color = new jscolor(input);
+                color.borderColor = "#FFF";
+                color.backgroundColor = "#666";
+            }
+            
             else {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'>" + val + "</div></li>");
             }    
         }
         else {
             if (prop == "Pozitie") {
-                $("#contentProperties").append("<li class='convertSpanInput toolItem'>" +
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span>Selecteaza</span><input class='propInput' id='" + 
                      ID + "' value='X=" + val.X + "; Y=" + val.Y + "'/></div></li>");
             }
             
             else if (prop == "Campuri") {
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal CampuriUl'><div id='" + obj.Proprietati.ID +
-                    prop + "'style='width: 170px; overflow: auto;'><span></span><ul></ul></div></div></li>");
+                    "<div class='propVal CampuriUl'><div id='" + ID + 
+                    "'><span></span><ul style='height: 150px;'></ul></div></div></li>");
                 AddFields(obj, prop);
             }
             
@@ -303,7 +459,7 @@ function displayProp(obj, array) {
                 for(var subprop in val) {
                    resTxt += subprop + "=" + val[subprop] + " ";
                 }
-                $("#contentProperties").append("<li class='toolItem'>" +
+                propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'>" + resTxt + "</div></li>");
             }
@@ -313,15 +469,15 @@ function displayProp(obj, array) {
     }
  
     if (obj.Nume == "Tabel") {
-        $("#contentProperties").append("<li class='toolItem'>" +
+        propertiesTab.append("<li class='toolItem'>" +
             "<div class='CreateDB' id='" + ID + "GenerateTable'><span>Genereaza tabel</span></div></li>");
-        $("#contentProperties").append("<li class='toolItem'>" +
+        propertiesTab.append("<li class='toolItem'>" +
             "<div class='CreateDB' id='" + ID + "CreateDB'><span>Creaza baza de date noua</span></div></li>");
         
         GenerateTable(obj, ID);
     }
         
-    $("#contentProperties").append("<li class='toolItem'>" +
+    propertiesTab.append("<li class='toolItem'>" +
         "<div class='remove' id='" + ID + "Remove'><span>Sterge</span></div></li>");
         
     switchSpanInput();
@@ -371,7 +527,7 @@ function disableSelection(place) {
         $("#properties").animate({
             "right": "-300px"
         });
-        $("#contentProperties").empty();
+        $("#contentProperties ul").empty();
         var element = $(place).find(".ItemSelected");
         element.removeClass("ItemSelected");
         element.draggable({
@@ -430,26 +586,33 @@ function switchSpanInput()
 }
 
 function editData(obj, prop, color) {
-    var id = "#" + obj.Proprietati.ID + prop;
+    var id = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
+    var objID = "#" + obj.Proprietati.ID;
     
     if (prop == "Text") {
         $(id).keyup(function () {
-            $("#" + obj.Proprietati.ID + " span").text($(this).val());
+            $(objID + " span").text($(this).val());
             obj.Proprietati[prop] = $(this).val();
         });
     }
     else if (prop == "Fundal") {
+        color.idObj = objID;
         color.obj = obj;
-        color.onFineChange = 'editBackground(this)';
+        color.attribute = "background-color";
+        color.prop = prop;
+        color.onFineChange = 'editColor(this)';
     } 
     else if (prop == "Culoare") {
+        color.idObj = objID;
         color.obj = obj;
+        color.attribute = "color";
+        color.prop = prop;
         color.onFineChange = 'editColor(this)';
     }
     else if (prop == "Font") {
         $(id).on("change", function() {
             var selFont = $(this).find(":selected").text();
-            $("#" + obj.Proprietati.ID).css("font-family", selFont);
+            $(objID).css("font-family", selFont);
             obj.Proprietati[prop] = selFont;
         });
     }
@@ -457,42 +620,42 @@ function editData(obj, prop, color) {
         $(id).keyup(function () {
             var maxSize = 100;
             if ($(this).val() <= maxSize) {
-                $("#" + obj.Proprietati.ID).css("font-size", $(this).val() + "px");
+                $(objID).css("font-size", $(this).val() + "px");
                 obj.Proprietati[prop] = $(this).val();
             }
             else {
-                $("#" + obj.Proprietati.ID).css("font-size", maxSize + "px");
+                $(objID).css("font-size", maxSize + "px");
                 obj.Proprietati[prop] = maxSize;
             }
             if ($(this).val() == "") {
-                $("#" + obj.Proprietati.ID).css("font-size", 12 + "px");
+                $(objID).css("font-size", 12 + "px");
                 obj.Proprietati[prop] = 12;
-                $("#" + obj.Proprietati.ID + prop + " span").text(12);
+                $(objID + prop + " span").text(12);
             }
         });
     }
     else if (prop == "Bold") {
-        var oldVal = $("#" + obj.Proprietati.ID).css("font-weight");
+        var oldVal = $(objID).css("font-weight");
 
         $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Da")
-                $("#" + obj.Proprietati.ID).css("font-weight", "bold");
-            else $("#" + obj.Proprietati.ID).css("font-weight", oldVal);
+                $(objID).css("font-weight", "bold");
+            else $(objID).css("font-weight", oldVal);
             
             obj.Proprietati[prop] = selBool;
         });
     }
     else if (prop == "Italic") {
-        var oldVal = $("#" + obj.Proprietati.ID).css("font-style");
+        var oldVal = $(objID).css("font-style");
 
         $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Da")
-                $("#" + obj.Proprietati.ID).css("font-style", "italic");
-            else $("#" + obj.Proprietati.ID).css("font-style", oldVal);
+                $(objID).css("font-style", "italic");
+            else $(objID).css("font-style", oldVal);
             
             obj.Proprietati[prop] = selBool;
         });
@@ -500,14 +663,14 @@ function editData(obj, prop, color) {
     else if (prop == "Latime") {
         $(id).keyup(function () {
             if ($(this).val() != "auto") 
-                $("#" + obj.Proprietati.ID).css("width", $(this).val() + "px");
-            else $("#" + obj.Proprietati.ID).css("width", "auto");
+                $(objID).css("width", $(this).val() + "px");
+            else $(objID).css("width", "auto");
             
             obj.Proprietati[prop] = $(this).val();
             if ($(this).val() == "") {
-                $("#" + obj.Proprietati.ID).css("width", "auto");
+                $(objID).css("width", "auto");
                 obj.Proprietati[prop] = "auto";
-                $("#" + obj.Proprietati.ID + prop + " span").text("auto");
+                $(objID + prop + " span").text("auto");
             }
             fixAlign(obj);
         });
@@ -515,87 +678,324 @@ function editData(obj, prop, color) {
     else if (prop == "Inaltime") {
         $(id).keyup(function () {
             if ($(this).val() != "auto") 
-                $("#" + obj.Proprietati.ID).css("height", $(this).val() + "px");
-            else $("#" + obj.Proprietati.ID).css("height", "auto");
+                $(objID).css("height", $(this).val() + "px");
+            else $(objID).css("height", "auto");
             
             obj.Proprietati[prop] = $(this).val();
             if ($(this).val() == "") {
-                $("#" + obj.Proprietati.ID).css("height", "auto");
+                $(objID).css("height", "auto");
                 obj.Proprietati[prop] = "auto";
-                $("#" + obj.Proprietati.ID + prop + " span").text("auto");
+                $(objID + prop + " span").text("auto");
             }
             fixAlign(obj);
         });
     }
     else if (prop == "Aliniere orizontal") {
-        var oldVal = $("#" + obj.Proprietati.ID).css("text-align");
+        var oldVal = $(objID).css("text-align");
 
-        $("#" + obj.Proprietati.ID + "orizontal").on("change", function() {
+        $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Stanga")
-                $("#" + obj.Proprietati.ID).css("text-align", "left");
+                $(objID).css("text-align", "left");
             else if (selBool == "Dreapta")
-                $("#" + obj.Proprietati.ID).css("text-align", "right");
+                $(objID).css("text-align", "right");
             else if (selBool == "Centrat")
-                $("#" + obj.Proprietati.ID).css("text-align", "center");
+                $(objID).css("text-align", "center");
             else if (selBool == "Stanga-Dreapta")
-                $("#" + obj.Proprietati.ID).css("text-align", "justify"); 
-            else $("#" + obj.Proprietati.ID).css("text-align", oldVal);
+                $(objID).css("text-align", "justify"); 
+            else $(objID).css("text-align", oldVal);
             
             obj.Proprietati[prop] = selBool;
             fixAlign(obj);
         });
     }
     else if (prop == "Aliniere vertical") {
-        var oldVal = $("#" + obj.Proprietati.ID).css("vertical-align");
+        var oldVal = $(objID).css("vertical-align");
 
-        $("#" + obj.Proprietati.ID + "vertical").on("change", function() {
+        $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Sus")
-                $("#" + obj.Proprietati.ID).find("span").css("vertical-align", "top");
+                $(objID).find("span").css("vertical-align", "top");
             else if (selBool == "Mijloc")
-                $("#" + obj.Proprietati.ID).find("span").css("vertical-align", "middle");
+                $(objID).find("span").css("vertical-align", "middle");
             else if (selBool == "Jos")
-                $("#" + obj.Proprietati.ID).find("span").css("vertical-align", "bottom");
-            else $("#" + obj.Proprietati.ID).find("span").css("vertical-align", oldVal);
+                $(objID).find("span").css("vertical-align", "bottom");
+            else $(objID).find("span").css("vertical-align", oldVal);
             
             obj.Proprietati[prop] = selBool;
             fixAlign(obj);
         });
     }
     else if (prop == "Baza de date") {
-        var SelectorDB = $("#" + obj.Proprietati.ID + "DBs");
+        var SelectorDB = $(id);
         SelectorDB.on("change", function() {
             var selectedDB = SelectorDB.find(":selected").text();
             obj.Proprietati[prop] = selectedDB;
         });
     }
     else if (prop == "Tabel") {
-        var SelectorTable = $("#" + obj.Proprietati.ID + "Tables");
-        SelectorTable.on("change", function() {
-            var selectedTable = SelectorTable.find(":selected").text();
-            obj.Proprietati[prop] = selectedTable;
-        });
-    }
-    else if (prop == "Tabel") {
-        var SelectorTable = $("#" + obj.Proprietati.ID + "Tables");
+        var SelectorTable = $(id);
         SelectorTable.on("change", function() {
             var selectedTable = SelectorTable.find(":selected").text();
             obj.Proprietati[prop] = selectedTable;
         });
     }
     else if (prop == "Campuri") {
-         var span = $("#" + obj.Proprietati.ID + prop + " span");
+         var span = $(id + " span");
          if (obj.Proprietati.Campuri.length == 0)
             span.text("Selecteaza");
         else {
             span.text(obj.Proprietati.Campuri);
             span.text(span.text().replace(/,/g, ", "));
         }
+
+        var numeTable = $(id).val();
+        var numeDB = $(id).val();    
+        
+        if (numeTable == "Nu" || numeDB == "Nu") {
+            obj.Proprietati.Campuri = [];
+            span.text("Selecteaza");
+        }
+    }
+    else if (prop == "Culoare Antet") {
+        color.idObj = objID + " thead";
+        color.obj = obj;
+        color.attribute = "color";
+        color.prop = prop;
+        color.onFineChange = 'editColor(this)';
+    }
+    else if (prop == "Culoare Text") {
+        color.idObj = objID + " tbody";
+        color.obj = obj;
+        color.attribute = "color";
+        color.prop = prop;
+        color.onFineChange = 'editColor(this)';
+    }
+    else if (prop == "Font Antet") {
+        $(id).on("change", function() {
+            var selFont = $(this).find(":selected").text();
+            $(objID + " thead").css("font-family", selFont);
+            obj.Proprietati[prop] = selFont;
+        });
+    }
+    else if (prop == "Font Text") {
+        $(id).on("change", function() {
+            var selFont = $(this).find(":selected").text();
+            $(objID + " tbody").css("font-family", selFont);
+            obj.Proprietati[prop] = selFont;
+        });
+    }
+    else if (prop == "Dimensiune Antet") {
+        $(id).keyup(function () {
+            var maxSize = 100;
+            if ($(this).val() <= maxSize) {
+                $(objID + " thead").css("font-size", $(this).val() + "px");
+                obj.Proprietati[prop] = $(this).val();
+            }
+            else {
+                $(objID + " thead").css("font-size", maxSize + "px");
+                obj.Proprietati[prop] = maxSize;
+            }
+            if ($(this).val() == "") {
+                $(objID + " thead").css("font-size", 12 + "px");
+                obj.Proprietati[prop] = 12;
+                $(objID + prop + " span").text(12);
+            }
+        });
+    }
+    else if (prop == "Dimensiune Text") {
+        $(id).keyup(function () {
+            var maxSize = 100;
+            if ($(this).val() <= maxSize) {
+                $(objID + " tbody").css("font-size", $(this).val() + "px");
+                obj.Proprietati[prop] = $(this).val();
+            }
+            else {
+                $(objID + " tbody").css("font-size", maxSize + "px");
+                obj.Proprietati[prop] = maxSize;
+            }
+            if ($(this).val() == "") {
+                $(objID + " tbody").css("font-size", 12 + "px");
+                obj.Proprietati[prop] = 12;
+                $(objID + prop + " span").text(12);
+            }
+        });
+    }
+    else if (prop == "Bold Antet") {
+        $(id).on("change", function() {
+            var selBool = $(this).find(":selected").text();
+            
+            if (selBool == "Da")
+                $(objID + " thead").css("font-weight", "bold");
+            else $(objID + " thead").css("font-weight", "normal");
+            
+            obj.Proprietati[prop] = selBool;
+        });
+    }
+    else if (prop == "Bold Text") {
+        $(id).on("change", function() {
+            var selBool = $(this).find(":selected").text();
+           
+            if (selBool == "Da")
+                $(objID + " tbody").css("font-weight", "bold");
+            else $(objID + " tbody").css("font-weight", "normal");
+
+            obj.Proprietati[prop] = selBool;
+        });
+    }
+    else if (prop == "Bordura Orizontal") {
+        $(id).keyup(function () {
+            var maxSize = 10;
+            var text = $(this).val();
+            var size = text.match(/\d+/)[0];
+            var verticalSize = obj.Proprietati["Bordura Vertical"];
+            
+            if  (size <= maxSize && size != 0) {
+                $(objID + "tbody table, tr, td").css("border-bottom", text);
+                $(objID + "tbody table, tr, td").css("border-top", text);
+                $(objID + " tbody, thead").css("border-bottom", text);
+                $(objID + " tbody, thead").css("border-top", text);
+                obj.Proprietati[prop] = text;
+            }
+            else if (size == 0) {
+                $(objID + " table, tr, td").css("border-bottom", text);
+                $(objID + " table, tr, td").css("border-top", text);
+                $(objID + " tbody, thead").css("border-bottom", verticalSize);
+                $(objID + " tbody, thead").css("border-top", verticalSize);
+                obj.Proprietati[prop] = text;
+            }
+            else {
+                $(objID + "tbody table, tr, td").css("border-bottom", maxSize + "px solid");
+                $(objID + "tbody table, tr, td").css("border-top", maxSize + "px solid");
+                obj.Proprietati[prop] = maxSize + "px solid";
+            }
+            if ($(this).val() == "") {
+                $(objID + "tbody table, tr, td").css("border-bottom", "1px solid");
+                $(objID + "tbody table, tr, td").css("border-top","1px solid");
+                obj.Proprietati[prop] = "1px solid";
+            }
+        });
+    }
+    else if (prop == "Bordura Vertical") {
+        $(id).keyup(function () {
+            var maxSize = 10;
+            var text = $(this).val();
+            var size = text.match(/\d+/)[0];
+            var horizontalSize = obj.Proprietati["Bordura Orizontal"];
+            
+            if (size <= maxSize && size != 0) {
+                $(objID + " table, tr, td").css("border-left", text);
+                $(objID + " table, tr, td").css("border-right", text);
+                $(objID + " tbody, thead").css("border-left", text);
+                $(objID + " tbody, thead").css("border-right", text);
+                obj.Proprietati[prop] = text;
+            }
+            else if (size == 0) {
+                $(objID + " table, tr, td").css("border-left", text);
+                $(objID + " table, tr, td").css("border-right", text);
+                $(objID + " tbody, thead").css("border-left", horizontalSize);
+                $(objID + " tbody, thead").css("border-right", horizontalSize);
+                obj.Proprietati[prop] = text;
+            }
+            else {
+                $(objID + " table, tr, td").css("border-left", maxSize + "px solid");
+                $(objID + " table, tr, td").css("border-right", maxSize + "px solid");
+                obj.Proprietati[prop] = maxSize + "px solid";
+            }
+
+            
+            if ($(this).val() == "") {
+                $(objID + "table, tr, td").css("border-left", "1px solid");
+                $(objID + "table, tr, td").css("border-right","1px solid");
+                obj.Proprietati[prop] = "1px solid";
+            }
+        });
+    }
+    else if (prop == "Stil") {
+        $(id).on("change", function() {
+            var selStil = $(this).find(":selected").text();
+            var color1 = "#" + $("#" + obj.Proprietati.ID + "Culoare1").val();
+            var color2 = "#" + $("#" + obj.Proprietati.ID + "Culoare2").val();
+            var color3 = "#" + $("#" + obj.Proprietati.ID + "Culoare3").val();
+
+            if (selStil == "Stilul 1") {
+                $(objID + " thead").css("background-color", color1);
+                $(objID + " tbody tr:odd td").css("background-color", color2);
+                $(objID + " tbody tr:even td").css("background-color", color3);
+            }
+            else if (selStil == "Stilul 2") {
+                $(objID + " thead").css("background-color", color1);
+                $(objID + " tbody td:nth-child(2n+1)").css("background-color", color2);
+                $(objID + " tbody td:nth-child(2n)").css("background-color", color3);
+            }
+            else if (selStil == "Stilul 3") {
+                $(objID + " thead").css("background-color", color1);
+                $(objID + " tbody td").css("background-color", color3);
+                $(objID + " tbody td:first-child").css("background-color", color2);
+            }
+            obj.Proprietati[prop] = selStil;
+        });
+    }
+    else if (prop == "Culoare 1") {
+        color.idObj = objID + " thead";
+        color.obj = obj;
+        color.attribute = "background-color";
+        color.prop = prop;
+        color.onFineChange = 'editColor(this)';
+    }
+    else if (prop == "Culoare 2") {
+        var color2Box = "#" + obj.Proprietati.ID + "Culoare2";
+        $(color2Box).on("click", function() {
+            if (obj.Proprietati["Stil"] == "Stilul 1") {
+                color.idObj = objID + " tbody tr:odd td";
+            }
+            else if (obj.Proprietati["Stil"] == "Stilul 2") {
+                color.idObj = objID + " tbody td:nth-child(2n+1)";
+            }
+            else if (obj.Proprietati["Stil"] == "Stilul 3") {
+                color.idObj = objID + " tbody td:first-child";
+            }
+    
+            color.obj = obj;
+            color.attribute = "background-color";
+            color.prop = prop;
+            color.onFineChange = 'editColor(this)';
+        });
+    }
+    else if (prop == "Culoare 3") {
+        var color3Box = "#" + obj.Proprietati.ID + "Culoare3";
+        $(color3Box).on("click", function() {
+            if (obj.Proprietati["Stil"] == "Stilul 1") {
+                color.idObj = objID + " tbody tr:even td";
+            }
+            else if (obj.Proprietati["Stil"] == "Stilul 2") {
+                color.idObj = objID + " tbody td:nth-child(2n)";
+            }
+            else if (obj.Proprietati["Stil"] == "Stilul 3") {
+                color.idObj = objID + " tbody td";
+            }
+            
+            color.obj = obj;
+            color.attribute = "background-color";
+            color.prop = prop;
+            color.onFineChange = 'editColor(this)';
+            
+            if (obj.Proprietati["Stil"] == "Stilul 3") {
+                var color3 = $("#" + obj.Proprietati.ID + "Culoare3");
+                color3.on("change", function() {
+                    var color2 = $("#" + obj.Proprietati.ID + "Culoare2");
+                    $(objID + " tbody td:first-child").css("background-color", "#" + color2.val());
+                });
+            }
+            
+        });
     }
     else if (prop == "Pozitie") {
+        $("#" + obj.Proprietati.ID).css("width", "auto");
+        $("#" + obj.Proprietati.ID).css("heigth", "auto");
+        
         $(id).keyup(function () {
             var X = $(this).val().split(';')[0];
             var Y = $(this).val().split(';')[1];
@@ -603,8 +1003,8 @@ function editData(obj, prop, color) {
             X = X.split('=')[1];
             Y = Y.split('=')[1];
             
-            $("#" + obj.Proprietati.ID).css("left", X + "px");
-            $("#" + obj.Proprietati.ID).css("top", Y + "px");
+            $(objID).css("left", X + "px");
+            $(objID).css("top", Y + "px");
             obj.Proprietati[prop].X = X;
             obj.Proprietati[prop].Y = Y;
         });
@@ -614,15 +1014,12 @@ function editData(obj, prop, color) {
 function editColor(color) {
     var HEXcolor = color.toHEXString();
     var obj = color.obj;
-    $("#" + obj.Proprietati.ID).css("color", HEXcolor);
-    obj.Proprietati["Culoare"] = HEXcolor.substring(1, HEXcolor.length);
-}
-
-function editBackground(color) {
-    var HEXcolor = color.toHEXString();
-    var obj = color.obj;
-    $("#" + obj.Proprietati.ID).css("background-color", HEXcolor);
-    obj.Proprietati["Fundal"] = HEXcolor.substring(1, HEXcolor.length);
+    var id = color.idObj;
+    var attr = color.attribute;
+    var prop = color.prop;
+    
+    $(id).css(attr, HEXcolor);
+    obj.Proprietati[prop] = HEXcolor.substring(1, HEXcolor.length);
 }
 
 function fixAlign(obj) {
@@ -648,64 +1045,74 @@ function removeObject(object, array) {
         if (array[i].Proprietati.ID == object.Proprietati.ID) {
             $("#" + array[i].Proprietati.ID).remove();
             array.splice(i, 1);
-            $("#contentProperties").empty();
+            $("#contentProperties ul").empty();
         }
     }
 }
 
 function AddDBs(obj, prop, DBs) {
     $.getJSON("../../json/tabele.json", function(data) {
+        var idProp = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
+        var idDbs = "#" + obj.Proprietati.ID + "Bazadedate";
+        var idTabels = "#" + obj.Proprietati.ID + "Tabel";
+        
         $.each(data, function() {
             DBs.push(this.numeDB);
         });
-        $("#" + obj.Proprietati.ID + "DBs").on("change", function() {
-            $("#" + obj.Proprietati.ID + prop + " span").text("Selecteaza");
-            $("#" + obj.Proprietati.ID + "Tables").val($("#" + obj.Proprietati.ID + "Tables option:first").val());
+        $(idDbs).on("change", function() {
+            $(idProp + " span").text("Selecteaza");
+            
+            var firstOption = $(idTabels + " option:first");
+            $(idTabels).val(firstOption.val());
+            
             obj.Proprietati.Campuri = [];
         });
-        
-        addOptions("#" + obj.Proprietati.ID + "DBs", obj, obj.Proprietati[prop], DBs);
+        addOptions(idDbs, obj, obj.Proprietati[prop], DBs);
     });
 }
 
 function CreateArrayTables(data, obj, prop, Tables) {
     $.each(data, function() {
         var DB = this;
-        var span = $("#" + obj.Proprietati.ID + prop + " span");
+        var idDbs = "#" + obj.Proprietati.ID + "Bazadedate";
+        var idTabels = "#" + obj.Proprietati.ID + "Tabel";
+        
         Tables.length = 0;
         Tables.push("Nu");
         
-        var selectedDB = $("#" + obj.Proprietati.ID + "DBs").find(":selected").text();
+        var selectedDB = $(idDbs).find(":selected").text();
         if (DB.numeDB == selectedDB) {
             $.each(DB.tabele, function() {
                 Tables.push(this.nume);
             });
-            $("#" + obj.Proprietati.ID + "Tables option").remove();
-            addOptions("#" + obj.Proprietati.ID + "Tables", obj, obj.Proprietati[prop], Tables);
+            $(idTabels + " option").remove();
+            addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
         }
         else if (selectedDB == "Nu") {
             Tables.length = 0;
             Tables.push("Nu");
-            $("#" + obj.Proprietati.ID + "Tables option").remove();
-            addOptions("#" + obj.Proprietati.ID + "Tables", obj, obj.Proprietati[prop], Tables);
-            obj.Proprietati.Campuri = [];
-            span.text("Selecteaza");
+            
+            $(idTabels + " option").remove();
+            addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
         }
     });
 }
 
 function AddTables(obj, prop, Tables) {
     $.getJSON("../../json/tabele.json", function(data) {
-        $("#" + obj.Proprietati.ID + "Tables option").remove();
-        addOptions("#" + obj.Proprietati.ID + "Tables", obj, obj.Proprietati[prop], Tables);
+        var idTabels = "#" + obj.Proprietati.ID + "Tabel";
+        var idDbs = "#" + obj.Proprietati.ID + "Bazadedate";
+         
+        $(idTabels + " option").remove();
+        addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
         CreateArrayTables(data, obj, prop, Tables);
         
-        $("#" + obj.Proprietati.ID + "DBs").on("change", function() {
-            $("#" + obj.Proprietati.ID + prop + " span").text("Selecteaza");
-            obj.Proprietati.Campuri = [];
-            
+        $(idDbs).bind().on("change", function() {
+            resetFields(obj, prop);
             CreateArrayTables(data, obj, prop, Tables);
-            $("#" + obj.Proprietati.ID + "Tables").val($("#" + obj.Proprietati.ID + "Tables option:first").val());
+            
+            var firstOption = $(idTabels + " option:first");
+            $(idTabels).val(firstOption.val());
         });
     });
 }
@@ -713,22 +1120,26 @@ function AddTables(obj, prop, Tables) {
 function MultiCheckbox(selection, obj, prop, array) {
     for (var val in array) {
         $(selection).append(`<li><input type="checkbox" value="` + 
-            array[val] + `"/>` + array[val] + `</li>`);
-            
-            if (obj.Proprietati.Campuri.indexOf(array[val]) >= 0) {
-                $(selection + " input[value='" + array[val] + "']").prop('checked', true);
-            }
-            else $(selection + " input[value='" + array[val] + "']").prop('checked', false);
+                        array[val] + `"/>` + array[val] + `</li>`);
+        var input = selection + " input[value='" + array[val] + "']";
+        
+        if (obj.Proprietati.Campuri.indexOf(array[val]) >= 0) {
+            $(input).prop('checked', true);
+        }
+        else $(input).prop('checked', false);
     }
     $(selection).val(prop);
 }
 
 function CreateField(obj, prop, data) {
-    var numeTable = $("#" + obj.Proprietati.ID + "Tables").val();
-    var numeDB = $("#" + obj.Proprietati.ID + "DBs").val();
+    var idProp = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
+    var idDbs = "#" + obj.Proprietati.ID + "Bazadedate";
+    var idTabels = "#" + obj.Proprietati.ID + "Tabel";
+    
+    var numeTable = $(idTabels).val();
+    var numeDB = $(idDbs).val();
     var Fields = [];
-    var ID = "#" + obj.Proprietati.ID + prop;
-    var span = $("#" + obj.Proprietati.ID + prop + " span");
+    var span = $(idProp + " span");
 
     for (var DB in data) 
         if (numeDB == data[DB].numeDB)
@@ -740,17 +1151,12 @@ function CreateField(obj, prop, data) {
                 }
             }
             
-    if (numeTable == "Nu" || numeDB == "Nu") {
-        obj.Proprietati.Campuri = [];
-        span.text("Selecteaza");
-    }
-   
-    $(ID + " li").remove();
+    $(idProp + " li").remove();
     
-    MultiCheckbox(ID + " ul", obj, obj.Proprietati[prop], Fields);
-    $(ID + " ul").val($(ID + " option:first").val());
+    MultiCheckbox(idProp + " ul", obj, obj.Proprietati[prop], Fields);
+    $(idProp + " ul").val($(idProp + " option:first").val());
     
-    $(ID + " input:checkbox").change(function() {
+    $(idProp + " input:checkbox").change(function() {
         var textChk = $(this).val();
         var array = obj.Proprietati.Campuri;
         
@@ -767,35 +1173,47 @@ function CreateField(obj, prop, data) {
             span.text(span.text().replace(/,/g, ", "));
         }
         else {
-            obj.Proprietati.Campuri = [];
-            span.text("Selecteaza");
+            resetFields(obj, prop);
         }
         obj.Proprietati.Campuri = array;
+
     });
 
 }
 
 function AddFields(obj, prop) {
     $.getJSON("../../json/tabele.json", function(data) {
-        var ID = "#" + obj.Proprietati.ID + prop;
-        var SelectBlock =  $(ID + " ul");
-        var span = $("#" + obj.Proprietati.ID + prop + " span");
+        var idProp = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
+        var idTabels = "#" + obj.Proprietati.ID + "Tabel";
+        var SelectBlock =  $(idProp + " ul");
          
         SelectBlock.hide();
-        $(ID + " span").on("click", function() {
+        $(idProp + " span").on("click", function() {
             SelectBlock.toggle();
         });
         
         CreateField(obj, prop, data);
-        $("#" + obj.Proprietati.ID + "Tables").on("change", function() {
-            span.text("Selecteaza");
+        $(idTabels).on("change", function() {
+            resetFields(obj, prop);
             CreateField(obj, prop, data);
         });
     });
 }
 
+function resetFields(obj, prop) {
+    var span = $("#" + obj.Proprietati.ID + "Campuri span");
+    var options = $("#" + obj.Proprietati.ID + "Campuri ul li");
+    
+    options.remove();
+    obj.Proprietati.Campuri = [];
+    span.text("Selecteaza");
+}
+
 function GenerateTable(obj, ID) {
-    $("#" + ID + "GenerateTable").on("click", function() {
+    $("#" + ID + "GenerateTable").bind().on("click", function() {
+        $("#" + obj.Proprietati.ID).css("width", "auto");
+        $("#" + obj.Proprietati.ID).css("heigth", "auto");
+        
         var TDs = "";
         var fields = obj.Proprietati.Campuri;
         
@@ -807,16 +1225,82 @@ function GenerateTable(obj, ID) {
         $("#" + obj.Proprietati.ID + " tbody tr").remove();
         $("#" + obj.Proprietati.ID + " thead tr").remove();
         $("#" + obj.Proprietati.ID + " thead").append(TR);
+        
+        var location = "#" + obj.Proprietati.ID + " tbody";
+        getDataFromServer(obj, location);
+    });
+}
+
+function findSQLFields(alias, tabel) {
+    var fields = [];
+    
+    for (var i = 0; i < alias.length; i++) {
+        for (var j = 0; j < tabel.alias_campuri.length; j++) {
+            if (alias[i] == tabel.alias_campuri[j]) {
+                fields.push(tabel.campuri[j]);
+            }
+        }
+    }
+    
+    return fields;
+}
+
+function getDataFromServer(obj, location) {
+    $.getJSON("../../json/tabele.json", function(data) {
+        var campuri = obj.Proprietati["Campuri"];
+        var fields = [];
+        
+        for (var i = 0; i < data.length; i++) {
+            if (obj.Proprietati["Baza de date"] == data[i].numeDB) {
+                var tabele = data[i].tabele;
+                for (var j = 0; j < tabele.length; j++) {
+                    if (obj.Proprietati["Tabel"] == tabele[j].nume) {
+                        fields = findSQLFields(campuri, tabele[j]);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        
+        $.ajax({
+            url: "../../php/Data/CP_genTable.php",
+            method: 'POST',
+            dataType: 'html',
+            data: {
+                DBName: obj.Proprietati["Baza de date"],
+                tableName: obj.Proprietati["Tabel"],
+                tableFields: fields,
+                tableAlias: obj.Proprietati["Campuri"]
+            },
+            success: function(data) {
+                $(location).append(data);
+                $("#" + obj.Proprietati.ID).css("width", "auto");
+                $("#" + obj.Proprietati.ID).css("heigth", "auto");
+            },
+            error: function(err) {
+                console.log(err);
+                $(location).append("<td style='color:darkred;'>An error has occured while generating the table!</td>");
+            }
+        });
+        
     });
 }
 
 /*
-    KNOWN BUGS
-    - "Nu" => table
-    - Table format
-    - create DB/Table
+    TODO:
+    - camp inserare simplu/dublu
+    - grafic
+    - creaza baza de date/tabel nou(a)
+    - formular de adaugare
+    - salvare
+    - deschide
+    - previzualizare
+    - nou
+    
+    BONUS:
+    - eticheta border
 */
-
 
 // --------------- main --------------- 
 function main() {

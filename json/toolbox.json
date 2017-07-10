@@ -63,12 +63,26 @@
     },
     {
         "Nume": "Tabel",
-        "Cod": "<table class='tabel'><thead></thead><tr><th>TABEL</th></tr><tbody></tbody></table>",
+        "Cod": "<div class='tabel'><table><thead></thead><tbody><tr><th>TABEL</th></tr></tbody></table></div>",
         "Proprietati": {
             "ID": "table",
             "Baza de date": "Nu",
             "Tabel": "Nu",
             "Campuri": [ ],
+            "Culoare Antet": "000000",
+            "Culoare Text": "000000",
+            "Font Antet": "Arial",
+            "Font Text": "Arial",
+            "Dimensiune Antet": 12,
+            "Dimensiune Text": 12,
+            "Bold Antet": "Nu",
+            "Bold Text": "Nu",
+            "Bordura Orizontal": "1px solid",
+            "Bordura Vertical": "1px solid",
+            "Stil": "Stilul 1",
+            "Culoare 1": "FFFFFF",
+            "Culoare 2": "FFFFFF",
+            "Culoare 3": "FFFFFF",
             "Pozitie": {
                 "X": 0,
                 "Y": 0

@@ -68,10 +68,14 @@
                 <div id="preview">
                 </div>
                 <div id="properties">
-                    <div class="topBar">
-                        <span>Proprietati</span>
+                    <div style="height: 100%; position: absolute; top: 0px;width: 100%;">
+                        <div class="topBar">
+                            <span>Proprietati</span>
+                        </div>
+                        <div id="contentProperties">
+                            <ul></ul>
+                        </div>
                     </div>
-                    <ul id="contentProperties"></ul>
                 </div>
             </div>
         </div>
