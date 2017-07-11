@@ -442,3 +442,12 @@ body {
     vertical-align: middle;
     text-align: center;
 }
+
+.move {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-image: url("../Resources/move.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+}

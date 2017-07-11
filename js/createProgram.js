@@ -699,6 +699,22 @@ function selectObject(place, data, array) {
     });
     $(place).find(".ItemSelected").removeClass("ItemSelected");
     
+    $(".move").remove();
+    if ($("#" + data.Proprietati.ID).hasClass("INPUT1")) {
+        var $input = $("#" + data.Proprietati.ID + " input");
+        var width = $input.css("width").replace(/px/g, "");
+        var height = $input.css("height").replace(/px/g, "");
+        
+        var pos_x = +width + 5;
+        var pos_y = +height + 5;
+        
+        if ($("#" + data.Proprietati.ID).find(".move").length == 0)
+            $("#" + data.Proprietati.ID).append("<div class='move'></div>");
+            
+        $(".move").css("top", pos_y + "px");
+        $(".move").css("left", pos_x + "px");
+    }
+    
     $("#" + data.Proprietati.ID).addClass("ItemSelected");
     $("#" + data.Proprietati.ID).draggable({
         disabled: false,
@@ -715,7 +731,7 @@ function selectObject(place, data, array) {
             
             $("#" + data.Proprietati.ID).css("height", data.Proprietati.Inaltime);
             $("#" + data.Proprietati.ID).css("width", data.Proprietati.Latime);
-            
+
             $(spanTxt).text("X=" + x + "; Y=" + y + " ");
         }
     });
@@ -724,6 +740,7 @@ function selectObject(place, data, array) {
 
 function disableSelection(place) {
     $(place).bind().on("click", function() {
+        $(".move").remove();
         $("#properties").animate({
             "right": "-300px"
         });
@@ -739,7 +756,6 @@ function disableSelection(place) {
 function selectOnClick(place, array) {
     $(place).bind().on("click", ".newItem", function(event) {
         var idItem = $(this).attr("id");
-        
         for (var item in array) {
             if (array[item].Proprietati.ID == idItem) {
                 selectObject(place, array[item], array);
@@ -1552,11 +1568,11 @@ function getDataFromServer(obj, location) {
 /*
     TODO:
     - camp inserare simplu/dublu
-    - grafic
     - creaza baza de date/tabel nou(a)
     - formular de adaugare
     - previzualizare
-    
+    - grafic
+
     BONUS:
     - eticheta border
 */

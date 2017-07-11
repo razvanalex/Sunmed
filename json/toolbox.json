@@ -22,11 +22,11 @@
         }
     },
     {
-        "Nume": "Camp de inserare simplu",
-        "Cod": "<div class='INPUT1'><span class='textField1'>#TEXT#</span><input class='inputField1' type='text'/></div>",
+        "Nume": "Camp de inserare",
+        "Cod": "<div class='INPUT1'><input class='inputField1' type='text'/></div>",
         "Proprietati": {
-            "ID": "input_simple",
-            "Text": "Nume Camp",
+            "ID": "CampDeInserare",
+            "Eticheta": "NaN",
             "Fundal": "FFFFFF",
             "Culoare": "000000",
             "Font": "Arial",
@@ -35,26 +35,9 @@
             "Italic": "Nu",
             "Latime": "auto",
             "Inaltime": "auto",
-            "Pozitie": {
-                "X": 0,
-                "Y": 0
-            }
-        }
-    },
-    {
-        "Nume": "Camp de inserare dublu",
-        "Cod": "<div class='INPUT2'><span class='textField2'>#TEXT#</span><input class='inputField2' type='text'/><input class='inputField2' type='text'/></div>",
-        "Proprietati": {
-            "ID": "input_double",
-            "Text": "Nume Camp",
-            "Fundal": "FFFFFF",
-            "Culoare": "000000",
-            "Font": "Arial",
-            "Dimensiune": 12,
-            "Bold": "Nu",
-            "Italic": "Nu",
-            "Latime": "auto",
-            "Inaltime": "auto",
+            "Bordura": "1px solid",
+            "Placeholder": "",
+            "Valoare": "",
             "Pozitie": {
                 "X": 0,
                 "Y": 0
