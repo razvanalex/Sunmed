@@ -43,9 +43,9 @@ body {
     padding: 20px;
 }
 
-#next {
+#openP {
     float: right;
-    right: 0px;
+    right: 20px;
     margin-right: 0px;
 }
 
@@ -84,6 +84,46 @@ body {
     top: 10px;
     margin-right: 2px;
     font-family: Segoe UI, Arial;
+}
+
+.nameSoft {
+    font-family: Segoe UI, Arial;
+    position: relative;
+    top: 10px;
+    display: block;
+    height: 50px;
+    width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+#ItemsBox {
+    border: 1px solid gray;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.imageSoft img{
+    position: relative;
+    top: 5px;
+    left: 2px;
+    width: 100px;
+    height: 50px;
+}
+
+.itemOpen {
+    position: relative;
+    display: inline-block;
+    font-family: Segoe UI, Arial;
+    width: 100px;
+    height: 120px;
+}
+
+.itemOpen:hover{
+    background-color: #a0c5e8;
 }
 
 #numeSoft {
@@ -332,6 +372,12 @@ body {
 .remove span {
     position: relative;
     top: 8px;
+}
+
+#status {
+    float: right;
+    padding-top: 7px;
+    padding-right: 10px;
 }
 
 .CreateDB {

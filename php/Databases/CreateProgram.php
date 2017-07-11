@@ -18,30 +18,28 @@
                 <div class="close" id="closeInit"></div>
             </div>
             <div class="contentWindow">
-
-                <div class="section" id="s1">
+                <div class="section">
                     <span id="topText">Alegeti tipul programului: </span>
                     <div id="selection"></div>
                     <div id="bottomText">
                         <span id="intrTxt">Introduceti numele programului: </span>
                         <input class="textbox" id="numeSoft" type="text" name="numeWorkplace"/>
-                        <div class="button" id="next"><span class="text">Urmatorul</span></div>
+                        <div class="button" id="create"><span class="text">Creeaza</span></div>
                     </div>
                 </div>
-
-                <div class="section" id="s2">
-                    <div>
-                        <span id="intrTxt">Numele bazei de date: </span>
-                        <input class="textbox" id="numeDB" type="text" name="DBName"/>
-                    </div>
-                    <div>
-                        <span id="intrTxt">Numele tabelului: </span>
-                        <input class="textbox" id="numeDB" type="text" name="DBName"/>
-                    </div>
-
-                    <div class="button" id="create"><span class="text">Creeaza</span></div>
+            </div>
+        </div>
+        
+        <div class="window hidden" id="OpenWindow">
+            <div class="topWindow">
+                <span class="title">Deschide Program</span>
+                <div class="close" id="closeOpenWindow"></div>
+            </div>
+            <div class="contentWindow">
+                <div class="section" id="openSection">
+                    <div id="ItemsBox"></div>
                 </div>
-            
+                <div class="button" id="openP"><span class="text">Deschide</span></div>
             </div>
         </div>
 
@@ -52,11 +50,13 @@
                         <ul id="fisierContent">
                             <li id="newProgram">Nou</li>
                             <li id="openProgram">Deschide</li>
+                            <li id="saveProgram">Salveaza</li>
                             <li id="exitProgram">Iesire</li>
                         </ul>
                     </li>
                     <li>Previzualizare</li>
                 </ul>
+                <div id="status"></div>
             </div>
             <div id="creationBody">
                 <div id="toolbox">

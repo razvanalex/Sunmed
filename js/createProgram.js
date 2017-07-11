@@ -20,9 +20,26 @@ function initTypesSoft() {
     });
 }
 
-function buttons() {
+function buttons(sessionOpened) {
     $("#exitProgram").on("click", function() {
         window.location.href = "../Session/Admin/AdminPage.php";
+    });
+    
+    $("#newProgram").on("click", function() {
+        $("#InitWorkspace").css("visibility", "visible");
+        $("#softContent").addClass("foreground_window");
+        
+        // Reset
+        $("#numeSoft").val("");
+        $.each($(".itemSoft"), function() {
+            $(this).removeClass("selected");
+        });
+    });
+    
+    $("#openProgram").on("click", function() {
+        OpenSoftWindow();
+        $("#OpenWindow").css("visibility", "visible");
+        $("#softContent").addClass("foreground_window");
     });
     
     $("#closeInit").on("click", function() {
@@ -30,35 +47,187 @@ function buttons() {
         $("#softContent").removeClass("foreground_window");
     });
     
+    $("#closeOpenWindow").on("click", function() {
+        $("#OpenWindow").css("visibility", "hidden");
+        $("#softContent").removeClass("foreground_window");
+    });
+        
     $("#create").on("click", function() {
-       $("#InitWorkspace").css("visibility", "hidden");
-       $("#softContent").removeClass("foreground_window");
-       $("#toolbox #contentToolbox li").remove();
-       InitToolbox();
-    });
-    
-    $("#newProgram").on("click", function() {
-        $("#InitWorkspace").css("visibility", "visible");
-        $("#softContent").addClass("foreground_window");
-        InitWizard();
+        var itemSel = $("#selection").find(".selected");
+        var ProgramName = $("#numeSoft").val();
+        
+        if (itemSel.length == 1 && ProgramName != "") {
+            CreateProgram(ProgramName, sessionOpened);
+        }
     });
 }
 
-function InitWizard() {
-    $("#s2").hide();
-    $("#s1").show();
+function CreateProgram(name, sessionOpened) {
+    var ObjArray = new Array();
+    $("#status").hide();
     
-    $("#next").on("click", function() {
-        $("#s1").hide();
-        $("#s2").show();
+    var path = "../../programe";
+    $.ajax({
+        url: '../Data/CreateFile.php',
+        method: 'POST',
+        dataType: 'html',
+        data: {
+            filename: name,
+            dir: path
+        },
+        success: function(data) {
+            sessionOpened = data;
+            
+            addProgramToJSON(name + ".json", path + "/");
+            
+            $("#InitWorkspace").css("visibility", "hidden");
+            $("#softContent").removeClass("foreground_window");
+            $("#toolbox #contentToolbox li").remove();
+            $("#preview *").remove();
+            
+            InitToolbox(sessionOpened, ObjArray);
+            
+            $("#status").text("Fisier nou creat!");
+            $("#status").show();
+            $("#status").fadeOut(3000);
+        },
+        error: function(err) {
+            $("#InitWorkspace").css("visibility", "hidden");
+            $("#softContent").removeClass("foreground_window");
+            $("#toolbox #contentToolbox li").remove();
+            $("#preview *").remove();
+
+            if (err.responseText == "Fisierul exista!")
+                $("#status").text("Fisierul exista deja!");
+            else $("#status").text("A aparut o eroare in timpul crearii!");
+            
+            $("#status").show();
+            $("#status").fadeOut(10000);
+            console.log(err);
+        }
     });
 }
 
+function SaveProgram(name, obj) {
+    $("#status").hide();
+    
+    $.ajax({
+        url: '../Data/SaveFile.php',
+        method: 'POST',
+        dataType: 'html',
+        data: {
+            filename: name,
+            object: obj
+        },
+        success: function(data) {
+            $("#status").text("Salvat!");
+            $("#status").show();
+            $("#status").fadeOut(3000);
+        },
+        error: function(err) {
+            $("#status").text("A aparut o eroare in timpul salvarii!");
+            $("#status").show();
+            $("#status").fadeOut(10000);
+            console.log(err);
+        }
+    });
+}
+
+function addProgramToJSON(nume, dir) {
+    var newSoft = {
+        name: nume,
+        path: dir
+    };
+    
+    $.getJSON("../../json/programe.json", function(programe) {
+        var exist = false;
+        
+         for (var i = 0; i < programe.length; i++) {
+             if (programe[i].name == nume) {
+                 exist = true;
+             }
+         }
+         
+         if (!exist) 
+            programe.push(newSoft);
+
+        $.ajax({
+            url: '../Data/AddProgramToJSON.php',
+            method: 'POST',
+            dataType: 'html',
+            data: {
+                filename: "../../json/programe.json",
+                programs: programe
+            },
+            success: function(data) {
+                console.log("JSON has been successfuly updated!");
+            },
+            error: function(err) {
+                console.log("ERROR JSON CREATION!");
+                console.log(err);
+            }
+        });
+    });
+}
+
+function OpenSoftWindow() {
+   $.getJSON("../../json/programe.json", function(softs) {
+        $(".itemOpen").remove();
+        
+        $.each(softs, function() {
+            var object = `<div class="itemOpen">
+                            <div class="imageSoft"><img src="../../Resources/logosunmed.png"/></div>
+                            <div class="nameSoft"><span>` + this.name + `</span></div>
+                        </div>`;
+            $("#ItemsBox").append(object);
+        });
+          
+        var $span = $('.nameSoft span');
+        $span.text(function (index, text) {
+            return text.replace(/\W*\s(\S)*$/, '...');
+        });
+            
+        $(".itemOpen").on("click", function() {
+            $.each($(".itemOpen"), function() {
+                $(this).removeClass("selected");
+            });
+            
+            $(this).addClass("selected");
+        });
+        
+        $("#openP").unbind().on("click", function() {
+            var selected = $("#ItemsBox").find(".selected");
+            if (selected) {
+                $("#preview *").remove();
+                $("#contentToolbox li").remove();
+                $("#OpenWindow").css("visibility", "hidden");
+                $("#softContent").removeClass("foreground_window");
+                
+                var name = selected.text().replace(/\s/g,'');
+                var obj = softs.filter(function( obj ) {
+                    return obj.name == name;
+                });
+                if (obj) {
+                    getObjectArray(obj[0].path + name);
+                }
+                else console.log("Error finding path!");
+            }
+        });
+    });
+}
+
+function getObjectArray(file) {
+    $.getJSON(file, function(ObjArray) {
+        InitToolbox(file, ObjArray);
+        
+        for (var i=0; i < ObjArray.length; i++)
+            appendObject(ObjArray[i], "#preview");
+    });
+}
 
 // ---------------- Program Utilities ----------------
-function InitToolbox() {
-    var ObjArray = new Array();
-    var id = 0;
+function InitToolbox(name, ObjArray) {
+    var id = ObjArray.length;
     
     $.getJSON("../../json/toolbox.json", function(tools) {
         $.each(tools, function() {
@@ -73,6 +242,11 @@ function InitToolbox() {
     });
    
    selectOnClick("#preview", ObjArray);
+   
+   $("#saveProgram").unbind().on("click", function() {
+        SaveProgram(name, ObjArray);
+   });
+  
 }
 
 function CrateObject(array, data, id) {
@@ -104,18 +278,33 @@ function applyProp(data, place) {
     
     for (var prop in data.Proprietati)
     {
-        if (prop == "Fundal")
-            $(id).css("bacckground-color", "#" + data.Proprietati[prop]);
-        else if (prop == "Culoare")
+        if (prop == "Text") {
+            $(id + " span").text(data.Proprietati[prop]);
+        }
+        if (prop == "Fundal") {
+            $(id).css("background-color", "#" + data.Proprietati[prop]);
+        }
+        else if (prop == "Culoare") {
             $(id).css("color", "#" + data.Proprietati[prop]);
-        else if (prop == "Font")
+        }
+        else if (prop == "Font") {
             $(id).css("font-family", data.Proprietati[prop]);
-        else if (prop == "Dimensiune")
+        }
+        else if (prop == "Dimensiune") {
             $(id).css("font-size", data.Proprietati[prop] + "px");
-        else if (prop == "Bold")
-            $(id).css("font-weight", data.Proprietati[prop]);
-        else if (prop == "Italic")
-            $(id).css("font-style", data.Proprietati[prop]);
+        }
+        else if (prop == "Bold") {
+            if (data.Proprietati[prop] == "Da")
+                $(id).css("font-weight", "bold");
+            else if (data.Proprietati[prop] == "Nu")
+                $(id).css("font-weight", "normal");
+        }
+        else if (prop == "Italic") {
+            if (data.Proprietati[prop] == "Da")
+                $(id).css("font-style", "italic");
+            else if (data.Proprietati[prop] == "Nu")
+                $(id).css("font-style", "normal");
+        }
         else if (prop == "Aliniere orizontal") {
             if (data.Proprietati[prop] == "Stanga")
                 $(id).css("text-align", "left");
@@ -125,25 +314,29 @@ function applyProp(data, place) {
                 $(id).css("text-align", "center");
             else if (data.Proprietati[prop] == "Stanga-Dreapta")
                 $(id).css("text-align", "justify"); 
+            fixAlign(data);
         }
         else if (prop == "Aliniere vertical") {
-            $(id).css("display", "table-cell");
+            $(id + " span").css("display", "table-cell");
             if (data.Proprietati[prop] == "Sus")
-                $(id).css("vertical-align", "top");
+                $(id + " span").css("vertical-align", "top");
             else if (data.Proprietati[prop] == "Mijloc")
-                $(id).css("vertical-align", "middle");
+                $(id + " span").css("vertical-align", "middle");
             else if (data.Proprietati[prop] == "Jos")
-                $(id).css("vertical-align", "bottom");
+                $(id + " span").css("vertical-align", "bottom");
+            fixAlign(data);
         }
         else if (prop == "Latime") {
             if (data.Proprietati[prop] == "auto")
                 $(id).css("width", "auto");
             else $(id).css("width", data.Proprietati[prop] + "px");
+            fixAlign(data);
         }
         else if (prop == "Inaltime"){
             if (data.Proprietati[prop] == "auto")
                 $(id).css("height", "auto");
             else $(id).css("height", data.Proprietati[prop] + "px");
+            fixAlign(data);
         }
         else if (prop == "Culoare Antet"){
             $(id + " thead").css("color", "#" + data.Proprietati[prop]);
@@ -157,25 +350,32 @@ function applyProp(data, place) {
         else if (prop == "Font Text"){
             $(id + " tbody").css("font-family", data.Proprietati[prop]);
         }
-        else if (prop == "Dimensiune Antet")
+        else if (prop == "Dimensiune Antet") {
             $(id + " thead").css("font-size", data.Proprietati[prop] + "px");
-        else if (prop == "Dimensiune Text")
+        }
+        else if (prop == "Dimensiune Text") {
             $(id + " tbody").css("font-size", data.Proprietati[prop] + "px");
-        else if (prop == "Bold Antet")
-            $(id + " thead").css("font-weight", data.Proprietati[prop]);
-        else if (prop == "Bold Text")
-            $(id + " tbody").css("font-weight", data.Proprietati[prop]);
+        }
+        else if (prop == "Bold Antet") {
+            if (data.Proprietati[prop] == "Da")
+                $(id+ " thead").css("font-weight", "bold");
+            else if (data.Proprietati[prop] == "Nu")
+                $(id+ " thead").css("font-weight", "normal");
+        }
+        else if (prop == "Bold Text") {
+            if (data.Proprietati[prop] == "Da")
+                $(id+ " tbody").css("font-weight", "bold");
+            else if (data.Proprietati[prop] == "Nu")
+                $(id+ " tbody").css("font-weight", "normal");
+        }
         else if (prop == "Bordura Orizontal") {
-            $(id + " tbody tr, td").css("border-bottom", data.Proprietati[prop]);
-            $(id + " tbody tr, td").css("border-top", data.Proprietati[prop]);
-            $(id + " thead, tbody").css("border-left", data.Proprietati[prop]);
-            $(id + " thead, tbody").css("border-right", data.Proprietati[prop]);
+            ApplyHorizontalBorder(data, prop, id);
         }
         else if (prop == "Bordura Vertical") {
-            $(id + " table, tr, td").css("border-left", data.Proprietati[prop]);
-            $(id + " table, tr, td").css("border-right", data.Proprietati[prop]);
-            $(id + " thead, tbody").css("border-top", data.Proprietati[prop]);
-            $(id + " thead, tbody").css("border-bottom", data.Proprietati[prop]);
+            ApplyVerticalBorder(data, prop, id);
+        }
+        else if (prop == "Stil") {
+            ApplyStyle(data, prop, id);
         }
         else if (prop == "Pozitie") {
             $(id).css("position", "absolute");
@@ -635,27 +835,25 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Bold") {
-        var oldVal = $(objID).css("font-weight");
-
         $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Da")
                 $(objID).css("font-weight", "bold");
-            else $(objID).css("font-weight", oldVal);
+            else if (selBool == "Nu")
+                $(objID).css("font-weight", "normal");
             
             obj.Proprietati[prop] = selBool;
         });
     }
     else if (prop == "Italic") {
-        var oldVal = $(objID).css("font-style");
-
         $(id).on("change", function() {
             var selBool = $(this).find(":selected").text();
             
             if (selBool == "Da")
                 $(objID).css("font-style", "italic");
-            else $(objID).css("font-style", oldVal);
+            else if (selBool == "Nu")
+                $(objID).css("font-style", "normal");
             
             obj.Proprietati[prop] = selBool;
         });
@@ -848,32 +1046,32 @@ function editData(obj, prop, color) {
     else if (prop == "Bordura Orizontal") {
         $(id).keyup(function () {
             var maxSize = 10;
-            var text = $(this).val();
+            var text = $(this).val() + " black";
             var size = text.match(/\d+/)[0];
-            var verticalSize = obj.Proprietati["Bordura Vertical"];
+            var verticalSize = obj.Proprietati["Bordura Vertical"] + " black";
             
             if  (size <= maxSize && size != 0) {
                 $(objID + "tbody table, tr, td").css("border-bottom", text);
                 $(objID + "tbody table, tr, td").css("border-top", text);
                 $(objID + " tbody, thead").css("border-bottom", text);
                 $(objID + " tbody, thead").css("border-top", text);
-                obj.Proprietati[prop] = text;
+                obj.Proprietati[prop] = $(this).val();
             }
             else if (size == 0) {
                 $(objID + " table, tr, td").css("border-bottom", text);
                 $(objID + " table, tr, td").css("border-top", text);
                 $(objID + " tbody, thead").css("border-bottom", verticalSize);
                 $(objID + " tbody, thead").css("border-top", verticalSize);
-                obj.Proprietati[prop] = text;
+                obj.Proprietati[prop] = $(this).val();
             }
             else {
-                $(objID + "tbody table, tr, td").css("border-bottom", maxSize + "px solid");
-                $(objID + "tbody table, tr, td").css("border-top", maxSize + "px solid");
+                $(objID + "tbody table, tr, td").css("border-bottom", maxSize + "px solid black");
+                $(objID + "tbody table, tr, td").css("border-top", maxSize + "px solid black");
                 obj.Proprietati[prop] = maxSize + "px solid";
             }
             if ($(this).val() == "") {
-                $(objID + "tbody table, tr, td").css("border-bottom", "1px solid");
-                $(objID + "tbody table, tr, td").css("border-top","1px solid");
+                $(objID + "tbody table, tr, td").css("border-bottom", "1px solid black");
+                $(objID + "tbody table, tr, td").css("border-top","1px solid black");
                 obj.Proprietati[prop] = "1px solid";
             }
         });
@@ -881,34 +1079,34 @@ function editData(obj, prop, color) {
     else if (prop == "Bordura Vertical") {
         $(id).keyup(function () {
             var maxSize = 10;
-            var text = $(this).val();
+            var text = $(this).val() + " black";
             var size = text.match(/\d+/)[0];
-            var horizontalSize = obj.Proprietati["Bordura Orizontal"];
+            var horizontalSize = obj.Proprietati["Bordura Orizontal"] + " black";
             
             if (size <= maxSize && size != 0) {
                 $(objID + " table, tr, td").css("border-left", text);
                 $(objID + " table, tr, td").css("border-right", text);
                 $(objID + " tbody, thead").css("border-left", text);
                 $(objID + " tbody, thead").css("border-right", text);
-                obj.Proprietati[prop] = text;
+                obj.Proprietati[prop] = $(this).val();
             }
             else if (size == 0) {
                 $(objID + " table, tr, td").css("border-left", text);
                 $(objID + " table, tr, td").css("border-right", text);
                 $(objID + " tbody, thead").css("border-left", horizontalSize);
                 $(objID + " tbody, thead").css("border-right", horizontalSize);
-                obj.Proprietati[prop] = text;
+                obj.Proprietati[prop] = $(this).val();
             }
             else {
-                $(objID + " table, tr, td").css("border-left", maxSize + "px solid");
-                $(objID + " table, tr, td").css("border-right", maxSize + "px solid");
+                $(objID + " table, tr, td").css("border-left", maxSize + "px solid black");
+                $(objID + " table, tr, td").css("border-right", maxSize + "px solid black");
                 obj.Proprietati[prop] = maxSize + "px solid";
             }
 
             
             if ($(this).val() == "") {
-                $(objID + "table, tr, td").css("border-left", "1px solid");
-                $(objID + "table, tr, td").css("border-right","1px solid");
+                $(objID + "table, tr, td").css("border-left", "1px solid black");
+                $(objID + "table, tr, td").css("border-right","1px solid black");
                 obj.Proprietati[prop] = "1px solid";
             }
         });
@@ -993,8 +1191,8 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Pozitie") {
-        $("#" + obj.Proprietati.ID).css("width", "auto");
-        $("#" + obj.Proprietati.ID).css("heigth", "auto");
+        $("ItemSelected").css("width", "auto");
+        $("ItemSelected").css("heigth", "auto");
         
         $(id).keyup(function () {
             var X = $(this).val().split(';')[0];
@@ -1210,7 +1408,7 @@ function resetFields(obj, prop) {
 }
 
 function GenerateTable(obj, ID) {
-    $("#" + ID + "GenerateTable").bind().on("click", function() {
+    $("#" + ID + "GenerateTable").on("click", function() {
         $("#" + obj.Proprietati.ID).css("width", "auto");
         $("#" + obj.Proprietati.ID).css("heigth", "auto");
         
@@ -1229,6 +1427,67 @@ function GenerateTable(obj, ID) {
         var location = "#" + obj.Proprietati.ID + " tbody";
         getDataFromServer(obj, location);
     });
+}
+
+function ApplyStyle(data, prop, id) {
+    var selStil = data.Proprietati[prop];
+    var color1 = "#" + data.Proprietati["Culoare 1"];
+    var color2 = "#" + data.Proprietati["Culoare 2"];
+    var color3 = "#" + data.Proprietati["Culoare 3"];
+
+    if (selStil == "Stilul 1") {
+        $(id + " thead").css("background-color", color1);
+        $(id + " tbody tr:odd td").css("background-color", color2);
+        $(id + " tbody tr:even td").css("background-color", color3);
+    }
+    else if (selStil == "Stilul 2") {
+        $(id + " thead").css("background-color", color1);
+        $(id + " tbody td:nth-child(2n+1)").css("background-color", color2);
+        $(id + " tbody td:nth-child(2n)").css("background-color", color3);
+    }
+    else if (selStil == "Stilul 3") {
+        $(id + " thead td").css("background-color", color1);
+        $(id + " tbody td").css("background-color", color3);
+        $(id + " tbody td:first-child").css("background-color", color2);
+    }
+}
+
+function ApplyHorizontalBorder(data, prop, id) {
+    var text = data.Proprietati[prop] + " black";
+    var size = text.match(/\d+/)[0];
+    var verticalSize = data.Proprietati["Bordura Vertical"] + " black";
+    
+    if  (size != 0) {
+        $(id + "tbody table, tr, td").css("border-bottom", text);
+        $(id + "tbody table, tr, td").css("border-top", text);
+        $(id + " tbody, thead").css("border-bottom", text);
+        $(id + " tbody, thead").css("border-top", text);
+    }
+    else if (size == 0) {
+        $(id + " table, tr, td").css("border-bottom", text);
+        $(id + " table, tr, td").css("border-top", text);
+        $(id + " tbody, thead").css("border-bottom", verticalSize);
+        $(id + " tbody, thead").css("border-top", verticalSize);
+    }
+}
+
+function ApplyVerticalBorder(data, prop, id) {
+    var text = data.Proprietati[prop] + " black";
+    var size = text.match(/\d+/)[0];
+    var horizontalSize = data.Proprietati["Bordura Orizontal"] + " black";
+    
+    if (size != 0) {
+        $(id + " table, tr, td").css("border-left", text);
+        $(id + " table, tr, td").css("border-right", text);
+        $(id + " tbody, thead").css("border-left", text);
+        $(id + " tbody, thead").css("border-right", text);
+    }
+    else if (size == 0) {
+        $(id + " table, tr, td").css("border-left", text);
+        $(id + " table, tr, td").css("border-right", text);
+        $(id + " tbody, thead").css("border-left", horizontalSize);
+        $(id + " tbody, thead").css("border-right", horizontalSize);
+    }
 }
 
 function findSQLFields(alias, tabel) {
@@ -1277,6 +1536,9 @@ function getDataFromServer(obj, location) {
                 $(location).append(data);
                 $("#" + obj.Proprietati.ID).css("width", "auto");
                 $("#" + obj.Proprietati.ID).css("heigth", "auto");
+                ApplyStyle(obj, "Stil", "#" + obj.Proprietati.ID);
+                ApplyHorizontalBorder(obj, "Bordura Orizontal", "#" + obj.Proprietati.ID);
+                ApplyVerticalBorder(obj, "Bordura Vertical", "#" + obj.Proprietati.ID);
             },
             error: function(err) {
                 console.log(err);
@@ -1293,10 +1555,7 @@ function getDataFromServer(obj, location) {
     - grafic
     - creaza baza de date/tabel nou(a)
     - formular de adaugare
-    - salvare
-    - deschide
     - previzualizare
-    - nou
     
     BONUS:
     - eticheta border
@@ -1310,8 +1569,9 @@ function main() {
     $("body").css("overflow", "hidden");
     $("#properties").css("right", "-300px");
     
+    var sessionOpened = "";
     initTypesSoft();
-    buttons();
+    buttons(sessionOpened);
 }
 
 $(document).ready(main());
