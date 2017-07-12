@@ -21,7 +21,7 @@
                 <div class="section">
                     <span id="topText">Alegeti tipul programului: </span>
                     <div id="selection"></div>
-                    <div id="bottomText">
+                    <div class="bottomText">
                         <span id="intrTxt">Introduceti numele programului: </span>
                         <input class="textbox" id="numeSoft" type="text" name="numeWorkplace"/>
                         <div class="button" id="create"><span class="text">Creeaza</span></div>
@@ -42,7 +42,55 @@
                 <div class="button" id="openP"><span class="text">Deschide</span></div>
             </div>
         </div>
-
+        
+        <div class="window hidden" id="CreateDBWindow">
+            <div class="topWindow">
+                <span class="title">Creare Baza de Date</span>
+                <div class="close" id="closeCreateDBWindow"></div>
+            </div>
+            <div class="contentWindow">
+                <div class="section">
+                    <div id="SelectDB">
+                        <span id="selSpanDB">Selecteaza Baza de Date: </span>
+                        <select id="DBs"></select>
+                        <div class="button" id="CreateDB"><span class="text">Creaza Baza de Date</span></div>
+                    </div>
+                    <div id="createTable">
+                        <div id="topCTable"></div>
+                        <div id="contentCTable"></div>
+                    </div>
+                </div>
+                <div class="bottomText">
+                    <span id="intrTxt2">Introduceti numele tabelului: </span>
+                    <input class="textbox" id="numeTabelNou" type="text" name="numeTabelNou"/>
+                    <div class="button" id="CreateTable"><span class="text">Creaza tabel nou</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="window info hidden" id="NameWindow">
+            <div class="topWindow">
+                <span class="title">Creare Baza de Date</span>
+                <div class="close" id="closeNameWindow"></div>
+            </div>
+            <div class="contentWindow">
+                <span id="SpanNameNewDB">Numele: </span>
+                <input class="textbox" id="numeDBNouInput" type="text" name="numeDBNou"/>
+                <div class="button" id="CreateDBBtn"><span class="text">Creaza</span></div>
+            </div>
+        </div>
+        
+        <div class="window info visible" id="InfoWindow">
+            <div class="topWindow">
+                <span class="title">Info</span>
+                <div class="close" id="closeInfoWindow"></div>
+            </div>
+            <div class="contentWindow">
+                <span id="TextInfo">TEXT</span>
+                <div class="button" id="OKbtn"><span class="text">OK</span></div>
+            </div>
+        </div>
+        
         <div id="softContent" class="">
             <div id="topMenuBar">
                 <ul id="menuBar">

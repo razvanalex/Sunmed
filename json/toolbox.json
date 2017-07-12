@@ -26,7 +26,7 @@
         "Cod": "<div class='INPUT1'><input class='inputField1' type='text'/></div>",
         "Proprietati": {
             "ID": "CampDeInserare",
-            "Eticheta": "NaN",
+            "Eticheta": "Fara",
             "Fundal": "FFFFFF",
             "Culoare": "000000",
             "Font": "Arial",
@@ -35,7 +35,9 @@
             "Italic": "Nu",
             "Latime": "auto",
             "Inaltime": "auto",
+            "Aliniere orizontal": "Stanga",
             "Bordura": "1px solid",
+            "Culoare Bordura": "000000",
             "Placeholder": "",
             "Valoare": "",
             "Pozitie": {

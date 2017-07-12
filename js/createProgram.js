@@ -2,10 +2,10 @@ function initTypesSoft() {
     $.getJSON("../../json/predefSofts.json", function(softs) {
         $.each(softs, function() {
             var object = `<div class="itemSoft">
-                            <div class="imageField"><img src="` + this.imagine + `"/></div>
-                            <div class="nameField"><span>` + this.nume + `</span></div>
-                            <div class="descriptionField">`+ this.descriere +`</div>
-                        </div>`;
+                <div class="imageField"><img src="` + this.imagine + `"/></div>
+                <div class="nameField"><span>` + this.nume + `</span></div>
+                <div class="descriptionField">`+ this.descriere +`</div>
+            </div>`;
             
             $("#selection").append(object);
         });
@@ -51,7 +51,17 @@ function buttons(sessionOpened) {
         $("#OpenWindow").css("visibility", "hidden");
         $("#softContent").removeClass("foreground_window");
     });
-        
+    
+    $("#closeCreateDBWindow").on("click", function() {
+        $("#CreateDBWindow").css("visibility", "hidden");
+        $("#softContent").removeClass("foreground_window");
+    });
+    
+    $("#closeInfoWindow").on("click", function() {
+        $("#InfoWindow").css("visibility", "hidden");
+        $("#softContent").removeClass("foreground_window");
+    });  
+    
     $("#create").on("click", function() {
         var itemSel = $("#selection").find(".selected");
         var ProgramName = $("#numeSoft").val();
@@ -176,9 +186,10 @@ function OpenSoftWindow() {
         
         $.each(softs, function() {
             var object = `<div class="itemOpen">
-                            <div class="imageSoft"><img src="../../Resources/logosunmed.png"/></div>
-                            <div class="nameSoft"><span>` + this.name + `</span></div>
-                        </div>`;
+                <div class="imageSoft"><img src="../../Resources/logosunmed.png"/></div>
+                <div class="nameSoft"><span>` + this.name + `</span></div>
+            </div>`;
+            
             $("#ItemsBox").append(object);
         });
           
@@ -227,7 +238,12 @@ function getObjectArray(file) {
 
 // ---------------- Program Utilities ----------------
 function InitToolbox(name, ObjArray) {
-    var id = ObjArray.length;
+    var id = 0;
+    
+    if (ObjArray.length > 0) {
+        var lastObj = ObjArray[ObjArray.length - 1].Proprietati["ID"];
+        id = +lastObj.replace( /^\D+/g, '');
+    }
     
     $.getJSON("../../json/toolbox.json", function(tools) {
         $.each(tools, function() {
@@ -278,6 +294,9 @@ function applyProp(data, place) {
     
     for (var prop in data.Proprietati)
     {
+        if ($(id).find("input").length)
+           id = id + " input";
+        
         if (prop == "Text") {
             $(id + " span").text(data.Proprietati[prop]);
         }
@@ -294,6 +313,7 @@ function applyProp(data, place) {
             $(id).css("font-size", data.Proprietati[prop] + "px");
         }
         else if (prop == "Bold") {
+
             if (data.Proprietati[prop] == "Da")
                 $(id).css("font-weight", "bold");
             else if (data.Proprietati[prop] == "Nu")
@@ -374,11 +394,20 @@ function applyProp(data, place) {
         else if (prop == "Bordura Vertical") {
             ApplyVerticalBorder(data, prop, id);
         }
+        else if (prop == "Bordura") {
+            var borderColor = " #" + data.Proprietati["Culoare Bordura"];
+            $(id).css("border", data.Proprietati[prop] + borderColor);
+        }
+        else if (prop == "Placeholder") {
+            $(id).attr("placeholder", data.Proprietati[prop]);
+        }
         else if (prop == "Stil") {
             ApplyStyle(data, prop, id);
         }
         else if (prop == "Pozitie") {
+            id = "#" + data.Proprietati.ID;
             $(id).css("position", "absolute");
+            
             $(id).css("left", data.Proprietati[prop].X + "px");
             $(id).css("top", data.Proprietati[prop].Y + "px");
         }
@@ -400,7 +429,8 @@ function displayProp(obj, array) {
     var Tables = [ "Nu" ];
     var Style = [ "Stilul 1", "Stilul 2", "Stilul 3"];
     var propertiesTab = $("#contentProperties ul");
-     
+    var Etichete = getElementsID(array, "Eticheta");
+
     propertiesTab.empty();
     
     for(var prop in obj.Proprietati) {
@@ -409,14 +439,21 @@ function displayProp(obj, array) {
         var ID = obj.Proprietati.ID + prop.replace(/\s/g,'');
         
         if (!isObject(val)) {
-            if (prop == "Text") {
+            if (prop == "Text" || prop == "Latime" || prop == "Inaltime"
+                    || prop == "Dimensiune" || prop == "Dimensiune Antet" 
+                    || prop == "Dimensiune Text" || prop == "Bordura Orizontal" 
+                    || prop == "Bordura Vertical" || prop == "Bordura"
+                    || prop == "Placeholder" || prop == "Valoare") {
                 propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
                     ID +"' value='" + val + "'/></div></li>");
             }
             
-            else if (prop == "Fundal") {
+            else if (prop == "Fundal" || prop == "Culoare" || prop == "Culoare 1" 
+                    || prop == "Culoare 2" || prop == "Culoare 3"
+                    || prop == "Culoare Bordura" || prop == "Culoare Text"
+                    || prop == "Culoare Antet" || prop == "Culoare Bordura") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     `<div class='propVal'><input class="propInput jscolor" id='` + 
@@ -428,208 +465,89 @@ function displayProp(obj, array) {
                 color.backgroundColor = "#666";
             }
             
-            else if (prop == "Culoare") {
+            else if (prop == "Font" || prop == "Font Antet" 
+                    || prop == "Font Text") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID +"' value='" + val + "'/></div></li>");
-                    
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
-            }
-            
-            else if (prop == "Dimensiune") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                ID +"' value='" + val + "'/></div></li>");
-            }
-            
-            else if (prop == "Font") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
                     
                 fonts.sort();
-                addOptions("#" + ID, obj, obj.Proprietati.Font, fonts);
+                addOptions("#" + ID, obj.Proprietati[prop], fonts);
             }
             
-            else if (prop == "Bold") {
+            else if (prop == "Bold" || prop == "Bold Antet" 
+                    || prop == "Bold Text") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati.Bold, bool);
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
+                    
+                addOptions("#" + ID, obj.Proprietati[prop], bool);
             }
             
             else if (prop == "Italic") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati.Italic, bool);
-            }
-            
-            else if (prop == "Latime") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
-            }
-            
-            else if (prop == "Inaltime") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
+                    "<div class='propVal'><select id='" +
+                    ID + "'></select></div></li>");
+                    
+                addOptions("#" + ID, obj.Proprietati[prop], bool);
             }
             
             else if (prop == "Aliniere orizontal") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati[prop], textAlign);
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
+                    
+                addOptions("#" + ID, obj.Proprietati[prop], textAlign);
             }
             
             else if (prop == "Aliniere vertical") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati[prop], verticalAlign);
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
+                    
+                addOptions("#" + ID, obj.Proprietati[prop], verticalAlign);
             }
             
             else if (prop == "Baza de date") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
+                    
                 AddDBs(obj, prop, DBs);
             }
                         
             else if (prop == "Tabel") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
+                    
                 AddTables(obj, prop, Tables);
-            }
-            
-            else if (prop == "Culoare Antet") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID + "' value='" + val + "'/></div></li>");
-                    
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
-            }
-            
-            else if (prop == "Culoare Text") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID + "' value='" + val + "'/></div></li>");
-                    
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
-            }
-            
-            else if (prop == "Font Antet" || prop == "Font Text") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                    
-                fonts.sort();
-                addOptions("#" + ID, obj, obj.Proprietati[prop], fonts);
-            }
-            
-            else if (prop == "Dimensiune Antet") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
-            }
-            
-            else if (prop == "Dimensiune Text") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
-            }
-            
-            else if (prop == "Bold Antet") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati[prop], bool);
-            }
-            
-            else if (prop == "Bold Text") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
-                addOptions("#" + ID, obj, obj.Proprietati[prop], bool);
-            }
-            
-            else if (prop == "Bordura Orizontal") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
-            }
-            
-            else if (prop == "Bordura Vertical") {
-                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><span></span><input class='propInput' id='" + 
-                    ID +"' value='" + val + "'/></div></li>");
             }
             
             else if (prop == "Stil") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    "<div class='propVal'><select id='" + ID + "'></select></div></li>");
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
                     
                 Style.sort();
-                addOptions("#" + ID, obj, obj.Proprietati[prop], Style);
+                addOptions("#" + ID, obj.Proprietati[prop], Style);
             }
             
-            else if (prop == "Culoare 1") {
+            else if (prop == "Eticheta") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID + "' value='" + val + "'/></div></li>");
+                    "<div class='propVal'><select id='" + 
+                    ID + "'></select></div></li>");
                     
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
-            }
-            
-            else if (prop == "Culoare 2") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID + "' value='" + val + "'/></div></li>");
-                    
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
-            }
-            
-            else if (prop == "Culoare 3") {
-                propertiesTab.append("<li class='toolItem'>" +
-                    "<div class='propText'>" + prop + ": </div>" +
-                    `<div class='propVal'><input class="propInput jscolor" id='` + 
-                    ID + "' value='" + val + "'/></div></li>");
-                    
-                var input = propertiesTab.find("#" + ID)[0];
-                color = new jscolor(input);
-                color.borderColor = "#FFF";
-                color.backgroundColor = "#666";
+                addOptions("#" + ID, obj.Proprietati[prop], Etichete);
             }
             
             else {
@@ -670,15 +588,24 @@ function displayProp(obj, array) {
  
     if (obj.Nume == "Tabel") {
         propertiesTab.append("<li class='toolItem'>" +
-            "<div class='CreateDB' id='" + ID + "GenerateTable'><span>Genereaza tabel</span></div></li>");
+            "<div class='CreateDB' id='" + 
+            ID + "GenerateTable'><span>Genereaza tabel</span></div></li>");
         propertiesTab.append("<li class='toolItem'>" +
-            "<div class='CreateDB' id='" + ID + "CreateDB'><span>Creaza baza de date noua</span></div></li>");
+            "<div class='CreateDB' id='" + 
+            ID + "CreateDB'><span>Creaza baza de date noua</span></div></li>");
         
         GenerateTable(obj, ID);
+        
+        $("#" + ID + "CreateDB").on("click", function() {
+            $("#CreateDBWindow").css("visibility", "visible");
+            $("#softContent").addClass("foreground_window");
+            CreateTableAddDBs("#DBs");
+        });
     }
         
     propertiesTab.append("<li class='toolItem'>" +
-        "<div class='remove' id='" + ID + "Remove'><span>Sterge</span></div></li>");
+        "<div class='remove' id='" + 
+        ID + "Remove'><span>Sterge</span></div></li>");
         
     switchSpanInput();
     
@@ -707,7 +634,7 @@ function selectObject(place, data, array) {
         
         var pos_x = +width + 5;
         var pos_y = +height + 5;
-        
+            
         if ($("#" + data.Proprietati.ID).find(".move").length == 0)
             $("#" + data.Proprietati.ID).append("<div class='move'></div>");
             
@@ -789,6 +716,10 @@ function switchSpanInput()
     $inputs.on("blur", function() {
         var $this = $(this);
         $this.hide().siblings("span").text($this.val()).show();
+        $this.hide().siblings("span").css("display", "inline-block");
+        $this.hide().siblings("span").css("width", "100%");
+        $this.hide().siblings("span").css("height", "30px");
+        
     }).on('keydown', function(e) {
         if (e.which == 9) {
             e.preventDefault();
@@ -804,8 +735,12 @@ function switchSpanInput()
 function editData(obj, prop, color) {
     var id = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
     var objID = "#" + obj.Proprietati.ID;
+
+    if ($(objID).find("input").length)
+        objID = objID + " input";
     
     if (prop == "Text") {
+        fixSpan(id);
         $(id).keyup(function () {
             $(objID + " span").text($(this).val());
             obj.Proprietati[prop] = $(this).val();
@@ -828,13 +763,16 @@ function editData(obj, prop, color) {
     else if (prop == "Font") {
         $(id).on("change", function() {
             var selFont = $(this).find(":selected").text();
+            
             $(objID).css("font-family", selFont);
             obj.Proprietati[prop] = selFont;
         });
     }
     else if (prop == "Dimensiune") {
+        fixSpan(id);
         $(id).keyup(function () {
             var maxSize = 100;
+                
             if ($(this).val() <= maxSize) {
                 $(objID).css("font-size", $(this).val() + "px");
                 obj.Proprietati[prop] = $(this).val();
@@ -875,6 +813,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Latime") {
+        fixSpan(id);
         $(id).keyup(function () {
             if ($(this).val() != "auto") 
                 $(objID).css("width", $(this).val() + "px");
@@ -890,6 +829,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Inaltime") {
+        fixSpan(id);
         $(id).keyup(function () {
             if ($(this).val() != "auto") 
                 $(objID).css("height", $(this).val() + "px");
@@ -1002,6 +942,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Dimensiune Antet") {
+        fixSpan(id);
         $(id).keyup(function () {
             var maxSize = 100;
             if ($(this).val() <= maxSize) {
@@ -1020,6 +961,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Dimensiune Text") {
+        fixSpan(id);
         $(id).keyup(function () {
             var maxSize = 100;
             if ($(this).val() <= maxSize) {
@@ -1060,6 +1002,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Bordura Orizontal") {
+        fixSpan(id);
         $(id).keyup(function () {
             var maxSize = 10;
             var text = $(this).val() + " black";
@@ -1093,6 +1036,7 @@ function editData(obj, prop, color) {
         });
     }
     else if (prop == "Bordura Vertical") {
+        fixSpan(id);
         $(id).keyup(function () {
             var maxSize = 10;
             var text = $(this).val() + " black";
@@ -1206,10 +1150,63 @@ function editData(obj, prop, color) {
             
         });
     }
+    else if (prop == "Bordura") {
+        fixSpan(id);
+        $(id).keyup(function () {
+            var maxSize = 10;
+            var text = $(this).val();
+            var size = text.match(/\d+/)[0];
+            var color = "#" + obj.Proprietati["Culoare Bordura"];
+            
+            if (size <= maxSize) {
+                $(objID).css("border", size + "px solid" + color);
+                obj.Proprietati[prop] = $(this).val();
+            }
+            else {
+                $(objID).css("border", maxSize + "px solid" + color);
+                obj.Proprietati[prop] = maxSize + "px solid";
+            }
+
+            if ($(this).val() == "") {
+                $(objID).css("border", "1px solid" + color);
+                obj.Proprietati[prop] = "1px solid";
+            }
+            
+        });
+    }
+    else if (prop == "Culoare Bordura") {
+        color.idObj = objID;
+        color.obj = obj;
+        color.attribute = "border-color";
+        color.prop = prop;
+        color.onFineChange = 'editColor(this)';
+    }
+    else if (prop == "Placeholder") {
+        fixSpan(id);
+        $(id).keyup(function () {
+            $(objID).attr("placeholder", $(this).val());
+            obj.Proprietati[prop] = $(this).val();
+        });
+    }
+    else if (prop == "Eticheta") {
+        $(id).on("change", function() {
+            var selFont = $(this).find(":selected").text();
+            obj.Proprietati[prop] = selFont;
+        });
+    }
+    else if (prop == "Valoare") {
+        fixSpan(id);
+        $(id).keyup(function () {
+            $(objID).attr("placeholder", $(this).val());
+            obj.Proprietati[prop] = $(this).val();
+        });
+    }
     else if (prop == "Pozitie") {
+        objID = "#" + obj.Proprietati.ID;
         $("ItemSelected").css("width", "auto");
         $("ItemSelected").css("heigth", "auto");
         
+        fixSpan(id);
         $(id).keyup(function () {
             var X = $(this).val().split(';')[0];
             var Y = $(this).val().split(';')[1];
@@ -1236,6 +1233,16 @@ function editColor(color) {
     obj.Proprietati[prop] = HEXcolor.substring(1, HEXcolor.length);
 }
 
+function fixSpan(id) {
+    if ($(id).val() == "") {
+        var $span = $(id).siblings("span");
+        if ($span.css("display") != "hidden")
+            $span.css("display", "inline-block");
+        $span.css("width", "100%");
+        $span.css("height", "30px");
+    }
+}
+
 function fixAlign(obj) {
     var span = $("#" + obj.Proprietati.ID).find("span");
     span.css("display", "table-cell");
@@ -1243,7 +1250,21 @@ function fixAlign(obj) {
     span.css("width", obj.Proprietati.Latime);
 }
 
-function addOptions(selection, obj, prop, array) {
+function getElementsID(ObjArray, type) {
+    var result = [ "Fara" ];
+    
+    for (var i = 0; i < ObjArray.length; i++) {
+        var element = ObjArray[i];
+        
+        if (element.Nume == type) {
+            result.push(element.Proprietati["ID"]);
+        }
+    }
+    
+    return result;
+}
+
+function addOptions(selection, prop, array) {
     for (var val in array) {
         $(selection).append($('<option>', {
             value: array[val], 
@@ -1281,7 +1302,7 @@ function AddDBs(obj, prop, DBs) {
             
             obj.Proprietati.Campuri = [];
         });
-        addOptions(idDbs, obj, obj.Proprietati[prop], DBs);
+        addOptions(idDbs, obj.Proprietati[prop], DBs);
     });
 }
 
@@ -1300,14 +1321,14 @@ function CreateArrayTables(data, obj, prop, Tables) {
                 Tables.push(this.nume);
             });
             $(idTabels + " option").remove();
-            addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
+            addOptions(idTabels, obj.Proprietati[prop], Tables);
         }
         else if (selectedDB == "Nu") {
             Tables.length = 0;
             Tables.push("Nu");
             
             $(idTabels + " option").remove();
-            addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
+            addOptions(idTabels, obj.Proprietati[prop], Tables);
         }
     });
 }
@@ -1318,7 +1339,7 @@ function AddTables(obj, prop, Tables) {
         var idDbs = "#" + obj.Proprietati.ID + "Bazadedate";
          
         $(idTabels + " option").remove();
-        addOptions(idTabels, obj, obj.Proprietati[prop], Tables);
+        addOptions(idTabels, obj.Proprietati[prop], Tables);
         CreateArrayTables(data, obj, prop, Tables);
         
         $(idDbs).bind().on("change", function() {
@@ -1561,14 +1582,44 @@ function getDataFromServer(obj, location) {
                 $(location).append("<td style='color:darkred;'>An error has occured while generating the table!</td>");
             }
         });
+    });
+}
+
+
+function CreateTableAddDBs(selection) {
+    $.getJSON("../../json/tabele.json", function(data) {
+        var DBs = [ "Selecteaza" ];
+        $.each(data, function() {
+            DBs.push(this.numeDB);
+        });
+
+        $(selection).css("max-height", "200px");
+        $(selection + " option").remove();
+        addOptions(selection, DBs[0], DBs);
+    });
+    
+    $("#CreateDB").on("click", function() {
+        $("#NameWindow").css("visibility", "visible");
+        $("#NameWindow").css("z-index", "50");
+        $("#NameWindow").css("top", "150px");
         
+        $("#closeNameWindow").on("click", function() {
+            $("#NameWindow").css("visibility", "hidden");
+            $("#CreateDBWindow").removeClass("foreground_window");
+        }); 
+        
+        $("#CreateDB").on("click", function() {
+            $("#NameWindow").css("visibility", "hidden");
+            $("#CreateDBWindow").removeClass("foreground_window");
+            //send ajax
+        }); 
     });
 }
 
 /*
     TODO:
-    - camp inserare simplu/dublu
-    - creaza baza de date/tabel nou(a)
+    - camp inserare                         --partial
+    - creaza baza de date/tabel nou(a)      --partial
     - formular de adaugare
     - previzualizare
     - grafic
