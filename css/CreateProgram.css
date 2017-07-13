@@ -469,11 +469,20 @@ body {
 #SelectDB select {
     display: inline-block;
     width: 200px;
-    height: 40px;
+    height: 30px;
 }
 
 #CreateDB {
     display: inline-block;
+    margin-left: 0;
+    margin-right: 0;
+    left: 10px;
+}
+
+#StergeDB {
+    display: inline-block;
+    margin-left: 0;
+    margin-right: 0;
     left: 10px;
 }
 
@@ -550,4 +559,32 @@ body {
     display: block;
     text-align: center;
     width: 100%;
+}
+
+.topCTableItem {
+    display: inline-block;
+    width: 175px;
+    font-family: Segoe UI, Arial;
+}
+
+.RawItemTable {
+    display: block;
+    height: 20px;
+    width: 100%;
+}
+
+#contentCTable input {
+    position: relative;
+}
+
+.firstInput {
+    width: 165px;
+}
+
+.secondInput {
+    width: 165px;
+}
+
+.thirdInput {
+    width: 165px;
 }

@@ -1596,24 +1596,199 @@ function CreateTableAddDBs(selection) {
         $(selection).css("max-height", "200px");
         $(selection + " option").remove();
         addOptions(selection, DBs[0], DBs);
-    });
-    
-    $("#CreateDB").on("click", function() {
-        $("#NameWindow").css("visibility", "visible");
-        $("#NameWindow").css("z-index", "50");
-        $("#NameWindow").css("top", "150px");
         
-        $("#closeNameWindow").on("click", function() {
-            $("#NameWindow").css("visibility", "hidden");
-            $("#CreateDBWindow").removeClass("foreground_window");
-        }); 
+        $("#StergeDB").unbind().on("click", function() {
+            var index = $(selection).prop('selectedIndex');
+            var selected = $(selection).find(":selected").val();
+            
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].numeDB == selected) {
+                    data.splice(i, 1);
+                }
+            }
+            
+            sendAjaxDropDB(selected, index, selection, data);
+        });
         
         $("#CreateDB").on("click", function() {
-            $("#NameWindow").css("visibility", "hidden");
-            $("#CreateDBWindow").removeClass("foreground_window");
-            //send ajax
-        }); 
+            $("#numeDBNouInput").val("");
+            $("#NameWindow").css("visibility", "visible");
+            $("#NameWindow").css("z-index", "50");
+            $("#NameWindow").css("top", "150px");
+            
+            $("#closeNameWindow").on("click", function() {
+                $("#NameWindow").css("visibility", "hidden");
+                $("#CreateDBWindow").removeClass("foreground_window");
+            }); 
+            
+            $("#CreateDBBtn").unbind().on("click", function() {
+                $("#NameWindow").css("visibility", "hidden");
+                $("#CreateDBWindow").removeClass("foreground_window");
+                
+                var nameDB = $("#numeDBNouInput").val();
+                var newDB = new Object();
+                
+                newDB.numeDB = nameDB;
+                newDB.tabele = [];
+                data.push(newDB);
+                
+                sendAjaxCreateDB(nameDB, selection, data);
+            }); 
+        });
     });
+    
+    $("#numeTabelNou").val("");
+    addTableRow();
+    
+    $("#CreateTable").on("click", function() {
+        createNewTableBtn();
+    });
+    
+}
+
+function sendAjaxCreateDB(name, selection, DBs) {
+    $.ajax({
+        url: "../../php/Databases/CreateDB.php",
+        method: "POST",
+        dataType: "html",
+        data: {
+            DBName: name,
+            Tabele: DBs
+        },
+        success: function(data) {
+            $("#InfoWindow").css("height", "150px");
+            $("#InfoWindow").css("top", "150px");
+            $("#InfoWindow").css("visibility", "visible");
+            $("#TextInfo").text(data);
+
+            $(selection).append($('<option>', {
+                value: name, 
+                text: name
+            }));
+
+            $("#OKbtn").on("click", function() {
+                $("#InfoWindow").css("visibility", "hidden");
+            });
+        },
+        error: function(err) {
+            $("#InfoWindow").css("visibility", "visible");
+            $("#InfoWindow").css("height", "250px");
+            
+            $("#TextInfo").text(err.responseText);
+            console.log(err.responseText);
+            
+            $("#OKbtn").on("click", function() {
+                $("#InfoWindow").css("visibility", "hidden");
+            });
+        }
+    });
+}
+
+function sendAjaxDropDB(name, index, selection, DBs) {
+    $.ajax({
+        url: "../../php/Databases/RemoveDB.php",
+        method: "POST",
+        dataType: "html",
+        data: {
+            DBName: name,
+            Tabele: DBs
+        },
+        success: function(data) {
+            $("#InfoWindow").css("height", "150px");
+            $("#InfoWindow").css("visibility", "visible");
+            $("#TextInfo").text(data);
+            $(selection + " option").eq(index).remove();
+            
+            $("#OKbtn").on("click", function() {
+                $("#InfoWindow").css("visibility", "hidden");
+            });
+        },
+        error: function(err) {
+            $("#InfoWindow").css("visibility", "visible");
+            $("#InfoWindow").css("height", "250px");
+            
+            $("#TextInfo").text(err.responseText);
+            console.log(err.responseText);
+            
+            $("#OKbtn").on("click", function() {
+                $("#InfoWindow").css("visibility", "hidden");
+            });
+        }
+    });
+}
+
+function addTableRow() {
+    $("#contentCTable div").remove();
+    var index = 0;
+    var numDivs = 0;
+    createRow(index);
+    
+    $('#contentCTable').unbind().on("focusin", "div", function() {
+        var $inputs = $(this).find("input");
+        var $div = $(this);
+        
+        $('#contentCTable div').removeClass("selectedRow");
+        if ($div.index() == numDivs) {
+            $(".lastItemInRow").removeClass("lastItemInRow");
+            $(this).addClass("selectedRow");
+            createRow(++index);
+            numDivs++;
+        }
+        else {
+            $(this).addClass("selectedRow");
+        }
+        
+        $(this).on("focusout", "input", function() {
+            if (numDivs > 1 
+                    && $inputs[0].value == "" 
+                    && $inputs[1].value == ""
+                    && $inputs[2].value == "") {
+                numDivs--;
+                index++;
+                $div.remove();
+            }
+        });
+
+    });
+}
+
+function createRow(id) {
+    $("#contentCTable").append(`<div class="RawItemTable lastItemInRow">
+        <input class="firstInput" type="text" id="first` + id + `" value="">
+        <input class="secondInput" type="text" id="second` + id + `" value="">
+        <input class="thirdInput" type="text" id="third` + id + `" value="">
+    </div>`);
+}
+
+function createNewTableBtn() {
+    var fields = $("#contentCTable").find(".RawItemTable");
+    var DBName = $("#DBs").find(":selected").val();
+    var TableName = $("#numeTabelNou").val();
+    var mySQLStatement = "CREATE TABLE " + TableName + " (";
+    var AliasName = [];
+    
+    for (var i = 0; i < fields.length; i++) {
+        var $input1 = $(fields[i]).find("input")[0].value;
+        var $input2 = $(fields[i]).find("input")[1].value;
+        var $input3 = $(fields[i]).find("input")[2].value;
+        
+        if ($input1 != "" && $input2 != "" && $input3 != "") {
+            if (i < fields.length - 2) {
+                mySQLStatement += $input1 + " " + $input3 + ", ";
+            }
+            else {
+                mySQLStatement += $input1 + " " + $input3 + ")";
+            }
+            AliasName.push($input2);
+        }
+    }
+    
+    console.log(DBName);
+    console.log(mySQLStatement);
+    console.log(AliasName);
+    
+    // send ajax here
+    // TODO: add new DB to prop panel
 }
 
 /*

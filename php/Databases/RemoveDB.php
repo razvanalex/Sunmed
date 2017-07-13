@@ -14,18 +14,18 @@
         die("Connection failed: " . $conn->connect_error);
     }
     
-    // Create database
-    $sql = "CREATE DATABASE " . $DBname . ";";
+    // Drop DB
+    $sql = "DROP DATABASE " . $DBname . ";";
     if ($conn->query($sql) === TRUE) 
     {
-        print "Baza de date creata cu succes!";
+        print "Baza de date stearsa cu succes!";
         file_put_contents("../../json/tabele.json", json_encode($Data));
     } 
     else 
     {
         header('HTTP/1.1 500 Internal Server');
         header('Content-type: application/json');
-        $response_array = "Eroare la crearea bazei de date: " . $conn->error; 
+        $response_array = "Eroare la stergerea bazei de date: " . $conn->error;
         print json_encode($response_array);
     }
     

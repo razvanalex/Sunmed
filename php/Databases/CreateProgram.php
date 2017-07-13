@@ -51,19 +51,24 @@
             <div class="contentWindow">
                 <div class="section">
                     <div id="SelectDB">
-                        <span id="selSpanDB">Selecteaza Baza de Date: </span>
+                        <span id="selSpanDB">Selecteaza DB: </span>
                         <select id="DBs"></select>
-                        <div class="button" id="CreateDB"><span class="text">Creaza Baza de Date</span></div>
+                        <div class="button" id="CreateDB"><span class="text">Creeaza DB</span></div>
+                        <div class="button" id="StergeDB"><span class="text">Sterge DB</span></div>
                     </div>
                     <div id="createTable">
-                        <div id="topCTable"></div>
+                        <div id="topCTable">
+                            <div class="topCTableItem">Nume Camp</div>
+                            <div class="topCTableItem">Alias Camp</div>
+                            <div class="topCTableItem">Tipul</div>
+                        </div>
                         <div id="contentCTable"></div>
                     </div>
                 </div>
                 <div class="bottomText">
                     <span id="intrTxt2">Introduceti numele tabelului: </span>
                     <input class="textbox" id="numeTabelNou" type="text" name="numeTabelNou"/>
-                    <div class="button" id="CreateTable"><span class="text">Creaza tabel nou</span></div>
+                    <div class="button" id="CreateTable"><span class="text">Creeaza tabel nou</span></div>
                 </div>
             </div>
         </div>
@@ -76,11 +81,11 @@
             <div class="contentWindow">
                 <span id="SpanNameNewDB">Numele: </span>
                 <input class="textbox" id="numeDBNouInput" type="text" name="numeDBNou"/>
-                <div class="button" id="CreateDBBtn"><span class="text">Creaza</span></div>
+                <div class="button" id="CreateDBBtn"><span class="text">Creeaza</span></div>
             </div>
         </div>
         
-        <div class="window info visible" id="InfoWindow">
+        <div class="window info hidden" id="InfoWindow">
             <div class="topWindow">
                 <span class="title">Info</span>
                 <div class="close" id="closeInfoWindow"></div>
