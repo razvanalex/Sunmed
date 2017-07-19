@@ -6,12 +6,14 @@
 <html>
     <head>
         <link rel="stylesheet" href="../../css/windows.css" type="text/css" />
-         <link rel="stylesheet" href="../../css/CreateProgram.css" type="text/css" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <link rel="stylesheet" href="../../css/CreateProgram.css" type="text/css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script type="text/javascript" src="../../js/jquery.canvasjs.min.js"></script>
     </head>
     <body>
-
+        
+        <!-- Init Workspace Window -->
         <div class="window hidden" id="InitWorkspace">
             <div class="topWindow">
                 <span class="title">Creare Program</span>
@@ -30,6 +32,7 @@
             </div>
         </div>
         
+        <!-- Open Workspace Window -->
         <div class="window hidden" id="OpenWindow">
             <div class="topWindow">
                 <span class="title">Deschide Program</span>
@@ -43,6 +46,7 @@
             </div>
         </div>
         
+        <!-- Create Database Window -->
         <div class="window hidden" id="CreateDBWindow">
             <div class="topWindow">
                 <span class="title">Creare Baza de Date</span>
@@ -73,6 +77,7 @@
             </div>
         </div>
         
+        <!-- Insert Name DB Window -->
         <div class="window info hidden" id="NameWindow">
             <div class="topWindow">
                 <span class="title">Creare Baza de Date</span>
@@ -85,6 +90,7 @@
             </div>
         </div>
         
+        <!-- Info Window -->
         <div class="window info hidden" id="InfoWindow">
             <div class="topWindow">
                 <span class="title">Info</span>
@@ -96,6 +102,23 @@
             </div>
         </div>
         
+        <!-- Add Data Window -->
+        <div class="window visible" id="AddDataGraph">
+            <div class="topWindow">
+                <span class="title">Adauga Data</span>
+                <div class="close" id="closeAddDataGraph"></div>
+            </div>
+            <div class="contentWindow">
+                <div class="section">
+                    
+                </div>
+                <div class="bottomText">
+                    <div class="button" id="AddDataOkBtn"><span class="text">Ok</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CreateProgram -->
         <div id="softContent" class="">
             <div id="topMenuBar">
                 <ul id="menuBar">
@@ -118,8 +141,6 @@
                     </div>
                     <ul id="contentToolbox"></ul>
                 </div>
-                <div id="preview">
-                </div>
                 <div id="properties">
                     <div style="height: 100%; position: absolute; top: 0px;width: 100%;">
                         <div class="topBar">
@@ -130,9 +151,14 @@
                         </div>
                     </div>
                 </div>
+                <div id="content">
+                    <div id="preview">
+                    </div>
+                </div>
             </div>
         </div>
         
+        <!-- Scripts -->
         <script type="text/javascript" src="../../js/jscolor.js"></script>
         <script type="text/javascript" src="../../js/createProgram.js"></script>
     </body>

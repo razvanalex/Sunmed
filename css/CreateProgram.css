@@ -70,6 +70,7 @@ body {
     margin-left: 0px;
     top: 5px;
     display: inline-block;
+    width: 100%;
 }
 
 #topText {
@@ -176,7 +177,7 @@ body {
 
 #softContent {
     position: absolute;
-    display: table;
+    display: block;
     top: 0px;
     bottom: 0px;
     margin: 0px;
@@ -186,7 +187,7 @@ body {
 
 #topMenuBar {
     position: relative;
-    display: table-row;
+    display: block;
     top: 0px;
     width: 100%;
     height: 30px;
@@ -237,41 +238,49 @@ body {
     cursor: default;
 }
 
-
 #creationBody {
     position: relative;
-    display: table;
-    height: 100%;
+    display: block;
+    height: calc(100% - 30px);
     width: 100%;
     vertical-align: top;
-    table-layout: fixed;
 }
 
 #toolbox {
     position: relative;
+    top: 0px;
     width: 200px;
+    height: 100%;
     background-color: lightgray;
-    display: table-cell;
-    font-family: Segoe UI, Arial
+    font-family: Segoe UI, Arial;
+    float: left;
+}
+
+#content {
+    position: absolute;
+    background-color: white;
+    display: block;
+    height: 100%;
+    width: calc(100% - 200px);
+    left: 200px;
+    overflow: hidden;
 }
 
 #preview {
-    position: relative;
-    background-color: white;
-    display: table-cell;
-    width: auto;
     height: 100%;
-    overflow: auto;
+    width: 100%;
 }
 
 #properties {
     position: relative;
     background-color: lightgray;
-    display: table-cell;
+    display: block;
     font-family: Segoe UI, Arial;
     width: 300px;
     height: 100%;
-    padding-bottom: 30px;
+    float: right;
+    right: -300px;
+    z-index: 5;
 }
 
 .topBar {
@@ -380,18 +389,18 @@ body {
     padding-right: 10px;
 }
 
-.CreateDB {
+.propBtn {
     text-align: center;
     background-color: #8eacb7;
     height: 40px;
 }
 
-.CreateDB:hover {
+.propBtn:hover {
     background-color: #37a6d0;
     cursor: default;
 }
 
-.CreateDB span {
+.propBtn span {
     position: relative;
     top: 8px;
 }
@@ -587,4 +596,9 @@ body {
 
 .thirdInput {
     width: 165px;
+}
+
+#AddDataOkBtn {
+    right: 10px;
+    float: right;
 }

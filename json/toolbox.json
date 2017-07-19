@@ -75,9 +75,30 @@
         }
     },
     {
-        "Nume": "Grafic",
-        "Cod": "",
+        "Nume": "Formular",
+        "Cod": "<div><div class='button'><span class='text'>#TEXT#</span></div></div>",
         "Proprietati": {
+            "ID": "Formular",
+            "Text": "Formular Nou",
+            "Pozitie": {
+                "X": 0,
+                "Y": 0
+            }
+        }
+    },
+    {
+        "Nume": "Grafic",
+        "Cod": "<div></div>",
+        "Proprietati": {
+            "ID": "Grafic",
+            "Titlu": "Titlu grafic",
+            "Data": [],
+            "Latime": "600",
+            "Inaltime": "400",
+            "Pozitie": {
+                "X": 0,
+                "Y": 0
+            }
         }
     }
 ]

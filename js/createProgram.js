@@ -62,6 +62,11 @@ function buttons(sessionOpened) {
         $("#softContent").removeClass("foreground_window");
     });  
     
+    $("#closeAddDataGraph").on("click", function() {
+        $("#AddDataGraph").css("visibility", "hidden");
+        $("#softContent").removeClass("foreground_window");
+    }); 
+    
     $("#create").on("click", function() {
         var itemSel = $("#selection").find(".selected");
         var ProgramName = $("#numeSoft").val();
@@ -269,11 +274,20 @@ function CrateObject(array, data, id) {
     var object = $.extend(true, {}, data); // deep copy of object
     
     object.Cod = setText(data.Cod, data.Proprietati.Text);
-    object.Proprietati.ID += id;
 
-    appendObject(object, "#preview");
+    if (object.Proprietati.ID == "Formular") {
+        if ($('*[id*=Formular]').length == 0) {
+            object.Proprietati.ID += id;
+            appendObject(object, "#preview");
+            array.push(object);
+        }
+    }
+    else {
+        object.Proprietati.ID += id;
+        appendObject(object, "#preview");
+        array.push(object);
+    }
 
-    array.push(object);
     return array;
 }
 
@@ -291,6 +305,15 @@ function appendObject(data, place) {
 
 function applyProp(data, place) {
     var id = "#" + data.Proprietati.ID;
+    
+    if (data.Nume == "Grafic") {
+        var options = { 
+            title: { text: data.Proprietati["Titlu"] }, 
+            data: [ {}
+            ]
+        };
+        var chart = new CanvasJS.Chart(data.Proprietati.ID, options);
+    }
     
     for (var prop in data.Proprietati)
     {
@@ -412,6 +435,10 @@ function applyProp(data, place) {
             $(id).css("top", data.Proprietati[prop].Y + "px");
         }
     }
+    
+    if (data.Nume == "Grafic") {
+        chart.render();
+    }
 }
 
 function displayProp(obj, array) {
@@ -430,9 +457,23 @@ function displayProp(obj, array) {
     var Style = [ "Stilul 1", "Stilul 2", "Stilul 3"];
     var propertiesTab = $("#contentProperties ul");
     var Etichete = getElementsID(array, "Eticheta");
-
-    propertiesTab.empty();
+    var chartTypes = [ "area", "bar", "bubble", "doughnut", "scatter", "spline", 
+        "pie", "line"];
     
+    propertiesTab.empty();
+    var chart;
+
+    if (obj.Nume == "Grafic") {
+        var options = { 
+            title: { text: "Title" }, 
+            data: [ {}
+            ]
+        };
+        chart = new CanvasJS.Chart(obj.Proprietati.ID, options);
+        chart.render();
+    }
+    
+     
     for(var prop in obj.Proprietati) {
         var val = obj.Proprietati[prop];
         var color;
@@ -549,6 +590,16 @@ function displayProp(obj, array) {
                     
                 addOptions("#" + ID, obj.Proprietati[prop], Etichete);
             }
+                        
+            else if (prop == "Titlu") {
+                propertiesTab.append("<li class='convertSpanInput toolItem'>" +
+                    "<div class='propText'>" + prop + ": </div>" +
+                    "<div class='propVal'><span></span><input class='propInput' id='" + 
+                    ID +"' value='" + val + "'/></div></li>");
+                
+                chart.title.set("text", obj.Proprietati[prop]);
+	            chart.render();
+            }
             
             else {
                 propertiesTab.append("<li class='toolItem'>" +
@@ -572,6 +623,10 @@ function displayProp(obj, array) {
                 AddFields(obj, prop);
             }
             
+            else if (prop == "Data") { 
+                continue;
+            }
+            
             else {
                 var resTxt = "";
                 for(var subprop in val) {
@@ -583,16 +638,16 @@ function displayProp(obj, array) {
             }
         }
         
-        editData(obj, prop, color);
+        editData(obj, prop, color, chart);
     }
  
     if (obj.Nume == "Tabel") {
         propertiesTab.append("<li class='toolItem'>" +
-            "<div class='CreateDB' id='" + 
+            "<div class='propBtn' id='" + 
             ID + "GenerateTable'><span>Genereaza tabel</span></div></li>");
         propertiesTab.append("<li class='toolItem'>" +
-            "<div class='CreateDB' id='" + 
-            ID + "CreateDB'><span>Creaza baza de date noua</span></div></li>");
+            "<div class='propBtn' id='" + 
+            ID + "CreateDB'><span>Creeaza baza de date noua</span></div></li>");
         
         GenerateTable(obj, ID);
         
@@ -601,6 +656,18 @@ function displayProp(obj, array) {
             $("#softContent").addClass("foreground_window");
             CreateTableAddDBs("#DBs");
         });
+    }
+    else if (obj.Nume == "Grafic") {
+        propertiesTab.append("<li class='toolItem'>" +
+            "<div class='propBtn' id='" + 
+            ID + "AddData'><span>Adauga Data</span></div></li>");
+            
+        $("#" + ID + "AddData").on("click", function() {
+            $("#AddDataGraph").css("visibility", "visible");
+            $("#softContent").addClass("foreground_window");
+            // ADD DATA function here
+            
+        }); 
     }
         
     propertiesTab.append("<li class='toolItem'>" +
@@ -732,7 +799,7 @@ function switchSpanInput()
     }).hide();
 }
 
-function editData(obj, prop, color) {
+function editData(obj, prop, color, chart) {
     var id = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
     var objID = "#" + obj.Proprietati.ID;
 
@@ -826,6 +893,9 @@ function editData(obj, prop, color) {
                 $(objID + prop + " span").text("auto");
             }
             fixAlign(obj);
+            if (obj.Nume == "Grafic") {
+                chart.render();
+            }
         });
     }
     else if (prop == "Inaltime") {
@@ -842,6 +912,9 @@ function editData(obj, prop, color) {
                 $(objID + prop + " span").text("auto");
             }
             fixAlign(obj);
+            if (obj.Nume == "Grafic") {
+                chart.render();
+            }
         });
     }
     else if (prop == "Aliniere orizontal") {
@@ -1201,6 +1274,24 @@ function editData(obj, prop, color) {
             obj.Proprietati[prop] = $(this).val();
         });
     }
+    else if (prop == "Titlu") {
+        fixSpan(id);
+        $(id).keyup(function () {
+            chart.title.set("text", $(this).val());
+            obj.Proprietati[prop] = $(this).val();
+            chart.render();
+        });
+    }
+    /*
+    else if (prop == "Tip") {
+         $(id).on("change", function() {
+            var selVal = $(this).find(":selected").text();
+            chart.data[0].type = selVal;
+            obj.Proprietati[prop] = selVal;
+            chart.render();
+        });
+    }
+    */
     else if (prop == "Pozitie") {
         objID = "#" + obj.Proprietati.ID;
         $("ItemSelected").css("width", "auto");
@@ -1665,7 +1756,12 @@ function sendAjaxCreateDB(name, selection, DBs) {
                 value: name, 
                 text: name
             }));
-
+            
+            $("").append($('<option>', {
+                value: name, 
+                text: name
+            }));
+            
             $("#OKbtn").on("click", function() {
                 $("#InfoWindow").css("visibility", "hidden");
             });
@@ -1766,6 +1862,7 @@ function createNewTableBtn() {
     var TableName = $("#numeTabelNou").val();
     var mySQLStatement = "CREATE TABLE " + TableName + " (";
     var AliasName = [];
+    var Campuri = [];
     
     for (var i = 0; i < fields.length; i++) {
         var $input1 = $(fields[i]).find("input")[0].value;
@@ -1780,24 +1877,74 @@ function createNewTableBtn() {
                 mySQLStatement += $input1 + " " + $input3 + ")";
             }
             AliasName.push($input2);
+            Campuri.push($input1);
         }
     }
     
-    console.log(DBName);
-    console.log(mySQLStatement);
-    console.log(AliasName);
-    
-    // send ajax here
-    // TODO: add new DB to prop panel
+    sendAjaxCreateTable(DBName, mySQLStatement, AliasName, Campuri, TableName);
+}
+
+function sendAjaxCreateTable(DBName, mySQLStatement, AliasName, Campuri, NumeTabel) {
+    $.getJSON("../../json/tabele.json", function(data) {
+        var newTable = {};
+        
+        newTable.nume = NumeTabel;
+        newTable.campuri = Campuri;
+        newTable.alias_campuri = AliasName;
+        
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].numeDB == DBName) {
+                if (!data[i].tabele)
+                    data[i].tabele = [];
+                data[i].tabele.push(newTable);
+                break;
+            }
+        }
+        
+        $.ajax({
+            url: "../../php/Databases/CreateTable.php",
+            method: "POST",
+            dataType: "html",
+            data: {
+                DBName: DBName,
+                mySqlStatement: mySQLStatement,
+                aliasName: AliasName, 
+                Tabel: NumeTabel,
+                data: data
+            },
+            success: function(data) {
+                $("#InfoWindow").css("height", "150px");
+                $("#InfoWindow").css("visibility", "visible");
+                $("#TextInfo").text(data);
+                
+                $("#OKbtn").on("click", function() {
+                    $("#InfoWindow").css("visibility", "hidden");
+                });
+            },
+            error: function(err) {
+                $("#InfoWindow").css("visibility", "visible");
+                $("#InfoWindow").css("height", "250px");
+                
+                $("#TextInfo").text(err.responseText);
+                console.log(err.responseText);
+                
+                $("#OKbtn").on("click", function() {
+                    $("#InfoWindow").css("visibility", "hidden");
+                });
+            }
+        });
+    });
 }
 
 /*
     TODO:
     - camp inserare                         --partial
-    - creaza baza de date/tabel nou(a)      --partial
+    - creaza baza de date/tabel nou(a)      --done
     - formular de adaugare
     - previzualizare
     - grafic
+        - init graph
+        - table transmorming to graph --- BUG
 
     BONUS:
     - eticheta border
@@ -1807,6 +1954,7 @@ function createNewTableBtn() {
 function main() {
     /*global $*/
     /*global jscolor*/
+    /*global CanvasJS*/
     
     $("body").css("overflow", "hidden");
     $("#properties").css("right", "-300px");
