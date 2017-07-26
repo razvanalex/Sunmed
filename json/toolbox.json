@@ -92,7 +92,7 @@
         "Proprietati": {
             "ID": "Grafic",
             "Titlu": "Titlu grafic",
-            "Data": [],
+            "Data": [ [], [] ],
             "Latime": "600",
             "Inaltime": "400",
             "Pozitie": {

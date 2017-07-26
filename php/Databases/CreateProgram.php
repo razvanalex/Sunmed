@@ -103,14 +103,16 @@
         </div>
         
         <!-- Add Data Window -->
-        <div class="window visible" id="AddDataGraph">
+        <div class="window hidden" id="AddDataGraph">
             <div class="topWindow">
                 <span class="title">Adauga Data</span>
                 <div class="close" id="closeAddDataGraph"></div>
             </div>
             <div class="contentWindow">
                 <div class="section">
-                    
+                    <div class="button" id="AddConstData"><span class="text">Adauga constanta</span>
+                    </div><div class="button" id="AddTabelData"><span class="text">Adauga data tabel</span>
+                    </div><div id="dataSection"></div>
                 </div>
                 <div class="bottomText">
                     <div class="button" id="AddDataOkBtn"><span class="text">Ok</span></div>

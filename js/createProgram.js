@@ -305,16 +305,11 @@ function appendObject(data, place) {
 
 function applyProp(data, place) {
     var id = "#" + data.Proprietati.ID;
-    
+
     if (data.Nume == "Grafic") {
-        var options = { 
-            title: { text: data.Proprietati["Titlu"] }, 
-            data: [ {}
-            ]
-        };
-        var chart = new CanvasJS.Chart(data.Proprietati.ID, options);
+        var chart = initChart(data.Proprietati.ID);
     }
-    
+
     for (var prop in data.Proprietati)
     {
         if ($(id).find("input").length)
@@ -456,23 +451,18 @@ function displayProp(obj, array) {
     var Tables = [ "Nu" ];
     var Style = [ "Stilul 1", "Stilul 2", "Stilul 3"];
     var propertiesTab = $("#contentProperties ul");
-    var Etichete = getElementsID(array, "Eticheta");
+    var Etichete = [ "Fara" ];
     var chartTypes = [ "area", "bar", "bubble", "doughnut", "scatter", "spline", 
         "pie", "line"];
-    
-    propertiesTab.empty();
     var chart;
 
+    propertiesTab.empty();
+    getElementsID(array, "Eticheta", Etichete);
+
     if (obj.Nume == "Grafic") {
-        var options = { 
-            title: { text: "Title" }, 
-            data: [ {}
-            ]
-        };
-        chart = new CanvasJS.Chart(obj.Proprietati.ID, options);
-        chart.render();
+        var chart = initChart(obj.Proprietati.ID);
+        applyDataChart(obj, chart);
     }
-    
      
     for(var prop in obj.Proprietati) {
         var val = obj.Proprietati[prop];
@@ -665,8 +655,7 @@ function displayProp(obj, array) {
         $("#" + ID + "AddData").on("click", function() {
             $("#AddDataGraph").css("visibility", "visible");
             $("#softContent").addClass("foreground_window");
-            // ADD DATA function here
-            
+            AddDataToChart(array, obj, chart);
         }); 
     }
         
@@ -1282,16 +1271,6 @@ function editData(obj, prop, color, chart) {
             chart.render();
         });
     }
-    /*
-    else if (prop == "Tip") {
-         $(id).on("change", function() {
-            var selVal = $(this).find(":selected").text();
-            chart.data[0].type = selVal;
-            obj.Proprietati[prop] = selVal;
-            chart.render();
-        });
-    }
-    */
     else if (prop == "Pozitie") {
         objID = "#" + obj.Proprietati.ID;
         $("ItemSelected").css("width", "auto");
@@ -1341,9 +1320,7 @@ function fixAlign(obj) {
     span.css("width", obj.Proprietati.Latime);
 }
 
-function getElementsID(ObjArray, type) {
-    var result = [ "Fara" ];
-    
+function getElementsID(ObjArray, type, result) {    
     for (var i = 0; i < ObjArray.length; i++) {
         var element = ObjArray[i];
         
@@ -1351,8 +1328,6 @@ function getElementsID(ObjArray, type) {
             result.push(element.Proprietati["ID"]);
         }
     }
-    
-    return result;
 }
 
 function addOptions(selection, prop, array) {
@@ -1636,9 +1611,9 @@ function getDataFromServer(obj, location) {
     $.getJSON("../../json/tabele.json", function(data) {
         var campuri = obj.Proprietati["Campuri"];
         var fields = [];
-        
+
         for (var i = 0; i < data.length; i++) {
-            if (obj.Proprietati["Baza de date"] == data[i].numeDB) {
+            if (obj.Proprietati["Baza de date"] == data[i].numeDB) {             
                 var tabele = data[i].tabele;
                 for (var j = 0; j < tabele.length; j++) {
                     if (obj.Proprietati["Tabel"] == tabele[j].nume) {
@@ -1647,7 +1622,6 @@ function getDataFromServer(obj, location) {
                     }
                 }
             }
-            break;
         }
         
         $.ajax({
@@ -1936,15 +1910,376 @@ function sendAjaxCreateTable(DBName, mySQLStatement, AliasName, Campuri, NumeTab
     });
 }
 
+function AddDataToChart(array, obj, chart) {
+    $("#dataSection .dataGraphRow").remove();
+
+    $("#AddConstData").unbind().on("click", function() {
+        appendConstData(array, "const");
+    });
+
+    $("#AddTabelData").unbind().on("click", function() {
+        appendConstData(array, "XYData");
+    });
+
+    $("#AddDataOkBtn").unbind().on("click", function() {
+        convertDataGraph(obj, 10);
+        applyDataChart(obj, chart);
+
+        $("#AddDataGraph").css("visibility", "hidden");
+        $("#softContent").removeClass("foreground_window");
+        $("#dataSection .dataGraphRow").remove();
+    });
+}
+
+function addStripLineToGraph(chart, index, value, label, color) {
+    chart.axisY[0].stripLines[index].set("value", value);
+    chart.axisY[0].stripLines[index].set("label", label);
+    chart.axisY[0].stripLines[index].set("color", color);
+    chart.axisY[0].stripLines[index].set("opacity", 1);
+}
+
+function addDataPointsToGraph(chart, data) {
+    for (var i = 0; i < data.length; i++) {
+        var X, Y, col = 0;
+
+        $("#" + data[i].Table + " thead td").each(function() {
+            col++;            
+            if ($(this).text() == data[i].DataX) {
+                var colX = "#" + data[i].Table + ' tbody td:nth-child(' + col + ')';
+                X = $(colX).map(function(){
+                    return $(this).text();
+                }).get();
+            }
+            if ($(this).text() == data[i].DataY) {
+                var colY = "#" + data[i].Table + ' tbody td:nth-child(' + col + ')';
+                Y = $(colY).map(function(){
+                    return $(this).text();
+                }).get();
+            }
+        });
+
+        if (X && Y) {
+            X = convertDataToType(X);
+            Y = convertDataToType(Y);
+
+            if (X.length == Y.length) {
+                var newSeries = {};
+                var dataPoints = [];
+
+                newSeries.type = data[i].Type;
+                if (data[i].Type != "pie " && data[i].Type != "bubble" 
+                        && data[i].Type !=  "stackedColumn" 
+                        && data[i].Type != "stackedColumn100" 
+                        && data[i].Type != "stackedArea" 
+                        && data[i].Type != "stackedArea100"
+                        && data[i].Type != "stackedBar" 
+                        && data[i].Type !="stackedBar100"
+                        && data[i].Type != "doughnut") {
+                    newSeries.color = data[i].Color;
+                }
+                else { 
+                    newSeries.colorSet = "colorset1";
+                }
+
+                for (var j = 0; j < X.length; j++) {
+                    var dPoint = {x: X[j], y: Y[j]};
+                    dataPoints.push(dPoint);
+                }
+                newSeries.dataPoints = dataPoints;
+                newSeries.showInLegend = true;
+                newSeries.legendText = data[i].DataY;
+
+                chart.options.data.push(newSeries);
+            }
+        }
+    }
+    chart.render();
+}
+
+function applyDataChart(obj, chart) {
+    var stripLines = obj.Proprietati["Data"][0];
+    var dataTables = obj.Proprietati["Data"][1];
+
+    addDataPointsToGraph(chart, dataTables);
+
+    for (var i = 0; i < stripLines.length; i++) {
+        var value = stripLines[i].value;
+        var label = stripLines[i].label;
+        var color = stripLines[i].color;
+        
+        addStripLineToGraph(chart, i, value, label, color);
+    }
+}
+
+function convertDataGraph(obj, max) {
+    var index = 0;
+    var data = [];
+    var stripLines = [];
+
+    $(".dataGraphRow").each(function() {
+        var type = $(this).find(".dataGraphCell")[0].innerHTML;
+        if (type == "Const.") {
+            var iValue = $(this).find("select")[0].value;
+            var iColor = $(this).find("input")[0];
+            var iText = $(this).find("input")[1].value;
+            iColor = $(iColor).css("background-color");
+
+            if ($("#" + iValue).find("input")[0]) {
+                iValue = $("#" + iValue).find("input")[0].value;
+            }
+
+            var stripLine = {
+                value: iValue,
+                label: iText,
+                color: iColor
+            }
+
+            stripLines.push(stripLine);
+        }
+        else if (type = "Tab.") {
+            var iTable = $(this).find("select")[0].value;
+            var iDataX = $(this).find("select")[1].value;
+            var iDataY = $(this).find("select")[2].value;
+            var iType = $(this).find("select")[3].value;
+            var iColor = $(this).find("input")[0];
+            iColor = $(iColor).css("background-color");
+             
+            var dataTable = {
+                Table: iTable,
+                DataX: iDataX,
+                DataY: iDataY,
+                Type: iType,
+                Color: iColor
+            };
+            data.push(dataTable);
+        }
+    });
+
+    obj.Proprietati["Data"] = [];
+    obj.Proprietati["Data"][0] = stripLines;
+    obj.Proprietati["Data"][1] = data;
+}
+
+function appendConstData(array, dataType) {
+    var num_ct = $("#dataSection").find(".const").length;
+    var num_xy = $("#dataSection").find(".XYData").length;
+    var num_ct_input = $("#dataSection .const").find("input").length;
+    var num_xy_input = $("#dataSection .XYData").find("input").length;
+    var num_xy_select = $("#dataSection .XYData").find("select").length;
+
+    if (dataType == "const") {
+        var inputs = [ "Selecteaza" ];
+
+        getElementsID(array, "Camp de inserare", inputs);          
+
+        $("#dataSection").append(`<div class="dataGraphRow const">
+            <div class="dataGraphCell">Const.</div>
+            <div class="dataGraphCell"><select id="InsertFieldSel` + num_ct + `"></select></div>
+            <div class="dataGraphCell">Culoare: 
+                <input class="InsertFieldColor jscolor" id="InsertFieldI` + num_ct_input + `"/>
+            </div>
+            <div class="dataGraphCell">Text: 
+                <input class="" id="InsertField` + (num_ct_input + 1) + `"/>
+            </div>
+        </div>`);
+
+        addOptions("#InsertFieldSel" + num_ct, inputs[0], inputs);
+
+        var colorInput = $("#InsertFieldI" + num_ct_input);
+        var color = new jscolor(colorInput[0]);
+
+        color.borderColor = "#FFF";
+        color.backgroundColor = "#666";
+        color.valueElement = null;
+
+        colorInput.val("");
+        colorInput.on("focus", function() {
+            $(this).blur();
+        });
+    }
+    else if (dataType == "XYData") {
+        var inputsTab = [ "Selecteaza" ];
+        var inputsX = [ "Selecteaza" ];
+        var inputsY = [ "Selecteaza" ];
+        var inputsTip = [ "line", "bar", "area", "column", "pie", 
+            "bubble", "scatter", "spline", "splineArea", "stepLine", "stepArea", 
+            "stackedColumn", "stackedColumn100", "stackedArea", "stackedArea100", 
+            "stackedBar", "stackedBar100", "doughnut" ];
+        
+        inputsTip.sort();
+        inputsTip.unshift("Selecteaza");
+
+        getElementsID(array, "Tabel", inputsTab);
+
+        $("#dataSection").append(`<div class="dataGraphRow XYData">
+            <div class="dataGraphCell">Tab.</div>
+            <div class="dataGraphCell"><select id="InsertFieldSelT` + num_xy_select + `"></select></div>
+            <div class="dataGraphCell">X:<select id="InsertFieldSelT` + (num_xy_select + 1) + `"></select></div>
+            <div class="dataGraphCell">Y:<select id="InsertFieldSelT` + (num_xy_select + 2) + `"></select></div>
+            <div class="dataGraphCell">Tip:
+                <select id="InsertFieldSelT` + (num_xy_select + 3) + `"></select>
+            </div>
+            <div class="dataGraphCell">Culoare:
+                <input class="InsertFieldColor jscolor" id="InsertFieldT` + num_xy_input + `"/>
+            </div>
+        </div>`);
+
+        addOptions("#InsertFieldSelT" + num_xy_select, inputsTab[0], inputsTab);
+        addOptions("#InsertFieldSelT" + (num_xy_select + 1), inputsX[0], inputsX);
+        addOptions("#InsertFieldSelT" + (num_xy_select + 2), inputsY[0], inputsY);
+        addOptions("#InsertFieldSelT" + (num_xy_select + 3), inputsTip[0], inputsTip);
+
+        var colorInput = $("#InsertFieldT" + num_xy_input);
+        var color = new jscolor(colorInput[0]);
+
+        color.borderColor = "#FFF";
+        color.backgroundColor = "#666";
+        color.valueElement = null;
+
+        colorInput.val("");
+        colorInput.on("focus", function() {
+            $(this).blur();
+        });
+
+        selectDataXY("#InsertFieldSelT" + num_xy_select,
+                     "#InsertFieldSelT" + (num_xy_select + 1), 
+                     "#InsertFieldSelT" + (num_xy_select + 2),
+                     array);
+    }
+
+    $(".dataGraphCell select").css("width", "80px");
+}
+
+function selectDataXY(table, inputX, inputY, array) {
+    $(table).on("change", function() {
+        $(inputX + " option").remove();
+        $(inputY + " option").remove();
+
+        var selTab = $(table).find(":selected")[0].innerHTML;
+        
+        for (var i = 0; i < array.length; i++) {
+            if (array[i].Proprietati["ID"] == selTab) {
+                var filedAliasName = ["Selecteaza"]; 
+                var campuri = array[i].Proprietati["Campuri"];
+
+                filedAliasName = filedAliasName.concat(campuri);
+
+                addOptions(inputX, filedAliasName[0], filedAliasName);
+                addOptions(inputY, filedAliasName[0], filedAliasName);
+
+                break;
+            }    
+        }
+    });   
+}
+
+function initStripLinesY(option, num) {
+    var stripLines = [];
+    
+    for (var i = 0; i < num; i++) {
+        var line = {
+            value: 0,
+            label: "",
+            showOnTop: true,
+            opacity: 0
+        }
+        stripLines.push(line);
+    }
+
+    if (!option.axisY)
+        option.axisY = [];
+
+    option.axisY.stripLines = stripLines;
+}
+
+function initChart(ID) {
+    var options = { 
+        title: { text: "Titlu" },
+        zoomEnabled: true, 
+        animationEnabled: true,
+        axisY:{
+            includeZero: false
+        },
+        data: [ 
+            {
+                type: "line",
+                dataPoints: []
+            }
+        ]
+    };
+    initStripLinesY(options, 10);
+    
+    var chart = new CanvasJS.Chart(ID, options);
+    chart.render();
+    
+    return chart;
+}
+
+function isValidDate(dateString)
+{
+    // First check for the pattern
+    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+        return false;
+
+    // Parse the date parts to integers
+    var parts = dateString.split("-");
+    var day = parseInt(parts[2], 10);
+    var month = parseInt(parts[1], 10);
+    var year = parseInt(parts[0], 10);
+
+    // Check the ranges of month and year
+    if(year < 1000 || year > 3000 || month == 0 || month > 12)
+        return false;
+
+    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+    // Adjust for leap years
+    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        monthLength[1] = 29;
+
+    // Check the range of the day
+    return day > 0 && day <= monthLength[month - 1];
+};
+
+function convertToDate(dateString)
+{
+    // First check for the pattern
+    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+        return null;
+
+    // Parse the date parts to integers
+    var parts = dateString.split("-");
+    var day = parseInt(parts[2], 10);
+    var month = parseInt(parts[1], 10);
+    var year = parseInt(parts[0], 10);
+
+    return new Date(year, month - 1, day);
+};
+
+function isValidNumber(n) {
+    if(!/^[0-9]+$/.test(n))
+        return false; 
+    return true;
+}
+
+function convertDataToType(data) {
+    data = data.map(function(x){
+        if (isValidDate(x)) {
+            return convertToDate(x);
+        }
+        else if(isValidNumber){
+            return +x; 
+        }               
+    });
+    return data;
+}
+
 /*
     TODO:
     - camp inserare                         --partial
     - creaza baza de date/tabel nou(a)      --done
     - formular de adaugare
     - previzualizare
-    - grafic
-        - init graph
-        - table transmorming to graph --- BUG
 
     BONUS:
     - eticheta border
