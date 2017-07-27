@@ -66,7 +66,7 @@ function buttons(sessionOpened) {
         $("#AddDataGraph").css("visibility", "hidden");
         $("#softContent").removeClass("foreground_window");
     }); 
-    
+
     $("#create").on("click", function() {
         var itemSel = $("#selection").find(".selected");
         var ProgramName = $("#numeSoft").val();
@@ -143,7 +143,7 @@ function SaveProgram(name, obj) {
             $("#status").text("A aparut o eroare in timpul salvarii!");
             $("#status").show();
             $("#status").fadeOut(10000);
-            console.log(err);
+            console.log(err.responseText);
         }
     });
 }
@@ -264,10 +264,13 @@ function InitToolbox(name, ObjArray) {
    
    selectOnClick("#preview", ObjArray);
    
-   $("#saveProgram").unbind().on("click", function() {
+    $("#saveProgram").unbind().on("click", function() {
         SaveProgram(name, ObjArray);
-   });
-  
+    });
+      
+    $("#viewPreview").on("click", function() {  
+        window.location.href = './Preview.php?program=' + name;
+    });
 }
 
 function CrateObject(array, data, id) {
@@ -1997,17 +2000,24 @@ function addDataPointsToGraph(chart, data) {
 }
 
 function applyDataChart(obj, chart) {
+    if (!obj.Proprietati["Data"])
+        return;
+
     var stripLines = obj.Proprietati["Data"][0];
     var dataTables = obj.Proprietati["Data"][1];
 
-    addDataPointsToGraph(chart, dataTables);
+    if (dataTables) {
+        addDataPointsToGraph(chart, dataTables);
+    }
 
-    for (var i = 0; i < stripLines.length; i++) {
-        var value = stripLines[i].value;
-        var label = stripLines[i].label;
-        var color = stripLines[i].color;
-        
-        addStripLineToGraph(chart, i, value, label, color);
+    if (stripLines) {
+        for (var i = 0; i < stripLines.length; i++) {
+            var value = stripLines[i].value;
+            var label = stripLines[i].label;
+            var color = stripLines[i].color;
+
+            addStripLineToGraph(chart, i, value, label, color);
+        }
     }
 }
 
@@ -2195,7 +2205,8 @@ function initStripLinesY(option, num) {
 function initChart(ID) {
     var options = { 
         title: { text: "Titlu" },
-        zoomEnabled: true, 
+        zoomEnabled: true,
+        panEnabled: true,
         animationEnabled: true,
         axisY:{
             includeZero: false

@@ -132,7 +132,7 @@
                             <li id="exitProgram">Iesire</li>
                         </ul>
                     </li>
-                    <li>Previzualizare</li>
+                    <li id="viewPreview">Previzualizare</li>
                 </ul>
                 <div id="status"></div>
             </div>
