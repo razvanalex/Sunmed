@@ -234,10 +234,18 @@ function OpenSoftWindow() {
 
 function getObjectArray(file) {
     $.getJSON(file, function(ObjArray) {
+        var graphs = [];
         InitToolbox(file, ObjArray);
         
-        for (var i=0; i < ObjArray.length; i++)
-            appendObject(ObjArray[i], "#preview");
+        for (var i = 0; i < ObjArray.length; i++) {
+        	if (ObjArray[i].Nume != "Grafic")
+            	appendObject(ObjArray[i], "#preview");
+            else graphs.push(ObjArray[i])
+        }
+        
+        for (var i = 0; i < graphs.length; i++) {
+        	appendObject(graphs[i], "#preview");
+        }
     });
 }
 
@@ -422,6 +430,51 @@ function applyProp(data, place) {
         else if (prop == "Placeholder") {
             $(id).attr("placeholder", data.Proprietati[prop]);
         }
+        else if (prop == "Valoare") {
+            var InputText = parseText(data.Proprietati[prop]);
+            $(id).attr("value", InputText);
+        }
+        else if (prop == "Title") {
+        	chart.title.set("text", data.Proprietati[prop]);
+        }
+		else if (prop == "Minimum") {
+			if (data.Proprietati[prop] != null) {
+			    var InputText = parseText(data.Proprietati[prop]);
+			
+				if (data.Proprietati[prop] == "null" || data.Proprietati[prop]== "") 
+					chart.axisY[0].set("minimum", null);
+				else chart.axisY[0].set("minimum", InputText);
+			}
+		}
+		else if (prop == "Maximum") {
+		    if (data.Proprietati[prop] != null) {
+				var InputText = parseText(data.Proprietati[prop]);
+
+				if (data.Proprietati[prop] == "null" || data.Proprietati[prop]== "") 
+		        	chart.axisY[0].set("maximum", null);
+				else chart.axisY[0].set("maximum", InputText);
+		    }
+		}
+		else if (prop == "Highlight Start") {
+			var InputText = parseText(data.Proprietati[prop]);
+		
+			if (data.Proprietati[prop] == "null" || data.Proprietati[prop] == "") 
+		    	chart.axisY[0].stripLines[0].set("startValue", 0);
+			else chart.axisY[0].stripLines[0].set("startValue", +InputText);
+		}
+		else if (prop == "Highlight End") {
+			var InputText = parseText(data.Proprietati[prop]);
+		
+			if (data.Proprietati[prop] == "null" || data.Proprietati[prop] == "") 
+		    	chart.axisY[0].stripLines[0].set("endValue", 0);
+			else chart.axisY[0].stripLines[0].set("endValue", +InputText);
+		}
+		else if (prop == "Highlight Color") {
+		    chart.axisY[0].stripLines[0].set("color", "#" + data.Proprietati[prop]);
+		}
+		else if (prop == "Highlight Opacity") {
+			chart.axisY[0].stripLines[0].set("opacity", data.Proprietati[prop]);
+		}		
         else if (prop == "Stil") {
             ApplyStyle(data, prop, id);
         }
@@ -466,7 +519,7 @@ function displayProp(obj, array) {
         var chart = initChart(obj.Proprietati.ID);
         applyDataChart(obj, chart);
     }
-     
+
     for(var prop in obj.Proprietati) {
         var val = obj.Proprietati[prop];
         var color;
@@ -477,7 +530,10 @@ function displayProp(obj, array) {
                     || prop == "Dimensiune" || prop == "Dimensiune Antet" 
                     || prop == "Dimensiune Text" || prop == "Bordura Orizontal" 
                     || prop == "Bordura Vertical" || prop == "Bordura"
-                    || prop == "Placeholder" || prop == "Valoare") {
+                    || prop == "Placeholder" || prop == "Valoare" 
+                    || prop == "Minimum" || prop == "Maximum"
+					|| prop == "Highlight Start" || prop == "Highlight End" 
+					|| prop == "Highlight Opacity") {
                 propertiesTab.append("<li class='convertSpanInput toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     "<div class='propVal'><span></span><input class='propInput' id='" + 
@@ -487,7 +543,8 @@ function displayProp(obj, array) {
             else if (prop == "Fundal" || prop == "Culoare" || prop == "Culoare 1" 
                     || prop == "Culoare 2" || prop == "Culoare 3"
                     || prop == "Culoare Bordura" || prop == "Culoare Text"
-                    || prop == "Culoare Antet" || prop == "Culoare Bordura") {
+                    || prop == "Culoare Antet" || prop == "Culoare Bordura"
+					|| prop == "Highlight Color") {
                 propertiesTab.append("<li class='toolItem'>" +
                     "<div class='propText'>" + prop + ": </div>" +
                     `<div class='propVal'><input class="propInput jscolor" id='` + 
@@ -631,7 +688,7 @@ function displayProp(obj, array) {
             }
         }
         
-        editData(obj, prop, color, chart);
+        editData(array, obj, prop, color, chart);
     }
  
     if (obj.Nume == "Tabel") {
@@ -696,7 +753,8 @@ function selectObject(place, data, array) {
             
         if ($("#" + data.Proprietati.ID).find(".move").length == 0)
             $("#" + data.Proprietati.ID).append("<div class='move'></div>");
-            
+        
+        $(".move").css("z-index", "9999");
         $(".move").css("top", pos_y + "px");
         $(".move").css("left", pos_x + "px");
     }
@@ -791,7 +849,7 @@ function switchSpanInput()
     }).hide();
 }
 
-function editData(obj, prop, color, chart) {
+function editData(array, obj, prop, color, chart) {
     var id = "#" + obj.Proprietati.ID + prop.replace(/\s/g,'');
     var objID = "#" + obj.Proprietati.ID;
 
@@ -1262,18 +1320,136 @@ function editData(obj, prop, color, chart) {
     else if (prop == "Valoare") {
         fixSpan(id);
         $(id).keyup(function () {
-            $(objID).attr("placeholder", $(this).val());
+            var InputText = parseText($(this).val());
+            $(objID).attr("value", InputText);
             obj.Proprietati[prop] = $(this).val();
+
+			updateInputs(array, obj.Proprietati["ID"]);
         });
+
+/*		var idInput = "#" + obj.Proprietati["ID"] + " input";
+		$(idInput).keydown(function () {
+			var InputText = parseText($(this).val());
+            $(id + " input").attr("value", InputText);
+            $(id + " span").attr("text", InputText);
+            obj.Proprietati[prop] = $(this).val();
+			
+			updateInputs(array, obj.Proprietati["ID"]);
+        });
+*/
     }
     else if (prop == "Titlu") {
         fixSpan(id);
+        chart.title.set("text", obj.Proprietati[prop]);
+        
         $(id).keyup(function () {
             chart.title.set("text", $(this).val());
             obj.Proprietati[prop] = $(this).val();
             chart.render();
         });
     }
+    else if (prop == "Minimum") {
+        fixSpan(id);
+		
+		if (obj.Proprietati[prop] != null) {
+    	    var InputText = parseText(obj.Proprietati[prop]);
+			
+			if (obj.Proprietati[prop] == "null" || obj.Proprietati[prop]== "") 
+				chart.axisY[0].set("minimum", null);
+			else chart.axisY[0].set("minimum", InputText);
+		}
+        
+        $(id).keyup(function () {
+        	var InputText = parseText($(this).val());
+            
+			if ($(this).val() == "null" || $(this).val() == "") 
+            	chart.axisY[0].set("minimum", null);
+			else chart.axisY[0].set("minimum", InputText);
+			
+            obj.Proprietati[prop] = $(this).val();
+            chart.render();
+        });
+    }
+    else if (prop == "Maximum") {
+        fixSpan(id);
+
+        if (obj.Proprietati[prop] != null) {
+			var InputText = parseText(obj.Proprietati[prop]);
+
+			if (obj.Proprietati[prop] == "null" || obj.Proprietati[prop]== "") 
+            	chart.axisY[0].set("maximum", null);
+			else chart.axisY[0].set("maximum", InputText);
+        }
+
+        $(id).keyup(function () {
+			var InputText = parseText($(this).val());
+
+			if ($(this).val() == "null" || $(this).val() == "") 
+            	chart.axisY[0].set("maximum", null);
+			else chart.axisY[0].set("maximum", InputText);
+
+			obj.Proprietati[prop] = $(this).val();
+            chart.render();
+        });
+    }
+	else if (prop == "Highlight Start") {
+		fixSpan(id);
+		$(id).keyup(function() {
+			var InputText = parseText($(this).val());
+			
+			if ($(this).val() == "null" || $(this).val() == "") 
+            	chart.axisY[0].stripLines[0].set("startValue", 0);
+			else chart.axisY[0].stripLines[0].set("startValue", +InputText);
+			
+			obj.Proprietati[prop] = $(this).val();
+			chart.render();
+		});
+	
+		var InputText = parseText(obj.Proprietati[prop]);
+		
+		if (obj.Proprietati[prop] == "null" || obj.Proprietati[prop] == "") 
+        	chart.axisY[0].stripLines[0].set("startValue", 0);
+		else chart.axisY[0].stripLines[0].set("startValue", +InputText);
+	}
+	else if (prop == "Highlight End") {
+		fixSpan(id);
+		$(id).keyup(function() {
+			var InputText = parseText($(this).val());
+			
+			if ($(this).val() == "null" || $(this).val() == "") 
+            	chart.axisY[0].stripLines[0].set("endValue", 0);
+			else chart.axisY[0].stripLines[0].set("endValue", +InputText);
+			
+			obj.Proprietati[prop] = $(this).val();
+			chart.render();
+		});
+	
+		var InputText = parseText(obj.Proprietati[prop]);
+		
+		if (obj.Proprietati[prop] == "null" || obj.Proprietati[prop] == "") 
+        	chart.axisY[0].stripLines[0].set("endValue", 0);
+		else chart.axisY[0].stripLines[0].set("endValue", +InputText);
+	}
+	else if (prop == "Highlight Color") {
+		color.idObj = chart;
+        color.obj = obj;
+        color.attribute = "color";
+        color.prop = prop;
+        color.onFineChange = 'editHChartColor(this)';
+        
+        chart.axisY[0].stripLines[0].set("color", "#" + obj.Proprietati[prop]);
+	}
+	else if (prop == "Highlight Opacity") {
+		fixSpan(id);
+		chart.axisY[0].stripLines[0].set("opacity", obj.Proprietati[prop]);
+
+		$(id).keyup(function() {
+			chart.axisY[0].stripLines[0].set("value", null);
+			chart.axisY[0].stripLines[0].set("opacity", +$(this).val());
+			obj.Proprietati[prop] = $(this).val();
+			chart.render();
+		});
+	}	
     else if (prop == "Pozitie") {
         objID = "#" + obj.Proprietati.ID;
         $("ItemSelected").css("width", "auto");
@@ -1305,6 +1481,18 @@ function editColor(color) {
     $(id).css(attr, HEXcolor);
     obj.Proprietati[prop] = HEXcolor.substring(1, HEXcolor.length);
 }
+
+function editHChartColor(color) {
+    var HEXcolor = color.toHEXString();
+    var obj = color.obj;
+    var id = color.idObj;
+    var attr = color.attribute;
+    var prop = color.prop;
+   
+    id.axisY[0].stripLines[0].set(attr, HEXcolor);
+    obj.Proprietati[prop] = HEXcolor.substring(1, HEXcolor.length);
+}
+
 
 function fixSpan(id) {
     if ($(id).val() == "") {
@@ -1635,7 +1823,8 @@ function getDataFromServer(obj, location) {
                 DBName: obj.Proprietati["Baza de date"],
                 tableName: obj.Proprietati["Tabel"],
                 tableFields: fields,
-                tableAlias: obj.Proprietati["Campuri"]
+                tableAlias: obj.Proprietati["Campuri"], 
+                whereClause: null
             },
             success: function(data) {
                 $(location).append(data);
@@ -1652,7 +1841,6 @@ function getDataFromServer(obj, location) {
         });
     });
 }
-
 
 function CreateTableAddDBs(selection) {
     $.getJSON("../../json/tabele.json", function(data) {
@@ -2016,7 +2204,7 @@ function applyDataChart(obj, chart) {
             var label = stripLines[i].label;
             var color = stripLines[i].color;
 
-            addStripLineToGraph(chart, i, value, label, color);
+            addStripLineToGraph(chart, i + 1, value, label, color);
         }
     }
 }
@@ -2191,7 +2379,11 @@ function initStripLinesY(option, num) {
             value: 0,
             label: "",
             showOnTop: true,
-            opacity: 0
+            opacity: 0, 
+            thickness: 3,
+            labelPlacement: "inside",
+            labelBackgroundColor: "white",
+    		labelFontWeight: "bold"
         }
         stripLines.push(line);
     }
@@ -2218,7 +2410,7 @@ function initChart(ID) {
             }
         ]
     };
-    initStripLinesY(options, 10);
+    initStripLinesY(options, 15);
     
     var chart = new CanvasJS.Chart(ID, options);
     chart.render();
@@ -2229,14 +2421,14 @@ function initChart(ID) {
 function isValidDate(dateString)
 {
     // First check for the pattern
-    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
         return false;
 
     // Parse the date parts to integers
-    var parts = dateString.split("-");
-    var day = parseInt(parts[2], 10);
+    var parts = dateString.split("/");
+    var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
-    var year = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
 
     // Check the ranges of month and year
     if(year < 1000 || year > 3000 || month == 0 || month > 12)
@@ -2255,20 +2447,20 @@ function isValidDate(dateString)
 function convertToDate(dateString)
 {
     // First check for the pattern
-    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
         return null;
 
     // Parse the date parts to integers
-    var parts = dateString.split("-");
-    var day = parseInt(parts[2], 10);
+    var parts = dateString.split("/");
+    var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
-    var year = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
 
     return new Date(year, month - 1, day);
 };
 
 function isValidNumber(n) {
-    if(!/^[0-9]+$/.test(n))
+    if(!/^[0-9]+(\.[0-9]+)?$/.test(n))
         return false; 
     return true;
 }
@@ -2278,11 +2470,159 @@ function convertDataToType(data) {
         if (isValidDate(x)) {
             return convertToDate(x);
         }
-        else if(isValidNumber){
+        else if(isValidNumber(x)){
             return +x; 
         }               
     });
     return data;
+}
+
+function convertValueToType(data) {
+    if (isValidDate(data)) {
+        return convertToDate(data);
+    }
+    else if(isValidNumber(data)){
+        return +data; 
+    }               
+}
+
+function interpretData(variable) {
+	if (variable.match(/input[0-9]+/)) {
+		if ($("#" + variable).length > 0) {
+			variable = $("#" + variable  + " input").val();
+			if (!variable) { 
+				variable = 0;
+			}
+			variable = convertValueToType(variable);
+		}
+	}
+	else if (variable.match(/table[0-9]+/)) {
+		var tableID;
+		var tableData = variable.substr(variable.indexOf(":") + 1);
+		
+		if (variable.indexOf(":") > 0) 
+			tableID = variable.substr(0, variable.indexOf(":"));
+		else tableID = variable;
+		
+		if ($("#" + tableID).length > 0) {
+			var functionData;
+			
+			if (tableData.match(/col\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				var colHTML;
+				var colArray = [];
+				
+				if (functionData == "@first") {
+					colHTML = "#" + tableID + " tbody tr td:first-child";	
+				}
+				else if (functionData == "@last") {
+					colHTML = "#" + tableID + " tbody tr td:last-child";	
+				}
+				else colHTML = "#" + tableID + " tbody tr td:nth-child(" + functionData + ")";	
+			
+				if($(colHTML).length > 0) {
+					$.each($(colHTML), function() {
+						colArray.push($(this)[0].innerHTML);
+					});
+					colArray = convertDataToType(colArray);
+					variable = colArray;
+				}
+			}
+			else if (tableData.match(/row\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				var rowHTML;
+				var rowArray = [];				
+				
+				if (functionData == "@first") {
+					rowHTML = "#" + tableID + " tbody tr:first td";	
+				}
+				else if (functionData == "@last") {
+					rowHTML = "#" + tableID + " tbody tr:last td";	
+				}
+				else rowHTML = "#" + tableID + " tbody tr:eq(" + (+functionData - 1) + ") td";
+
+				
+				if($(rowHTML).length > 0) {
+					$.each($(rowHTML), function() {
+						rowArray.push($(this)[0].innerHTML);
+					});
+					rowArray = convertDataToType(rowArray);
+					variable = rowArray;
+				}
+				
+			}
+			else if (tableData.match(/data\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				
+				var colIndex = functionData.split(",")[0];
+				var rowIndex = functionData.split(",")[1];
+				var dataHTML;
+				var dataValue;
+				
+				if (colIndex == "@first") {
+					colIndex = "td:first-child";	
+				}
+				else if (colIndex == "@last") {
+					colIndex = "td:last-child";		
+				}
+				else colIndex = "td:nth-child(" + colIndex + ")";
+				
+				if (rowIndex == "@first") {
+					rowIndex = "tr:first-child";	
+				}
+				else if (rowIndex == "@last") {
+					rowIndex = "tr:last-child";		
+				}
+				else rowIndex = "tr:eq(" + (+rowIndex - 1) + ")";
+				
+				dataHTML = "#" + tableID + " tbody " + rowIndex + " " + colIndex;
+		
+				if($(dataHTML).length > 0) {
+					dataValue = $(dataHTML)[0].innerHTML;
+					dataValue = convertValueToType(dataValue);
+					variable = dataValue;
+				}
+			}
+		}
+	}
+
+	return variable;
+}
+
+function parseText(string) {
+	if (string[0] == "=") {
+		var vars = string.match(/#[^#]+#/g);
+				
+		if (vars) {
+			var numOfVars = vars.length;
+
+			for (var i = 0; i < vars.length; i++) {
+				vars[i] = vars[i].substring(1, vars[i].length - 1);
+				vars[i] = interpretData(vars[i]);
+			}
+			for (var j = 0; j < numOfVars; j++) {
+				if (vars[j].constructor === Array)
+					string = string.replace(/#[^#]+#/, "[" + vars[j]+ "]");
+				else string = string.replace(/#[^#]+#/, vars[j]);
+			}
+		}
+		string = string.substring(1, string.length);
+		string = math.eval(string);
+	}
+	
+	return string;
+}
+
+function updateInputs(arrayObj, crtID) {
+	for (var i = 0; i < arrayObj.length; i++) {
+		if (arrayObj[i].Nume == "Camp de inserare" && arrayObj[i].Proprietati["ID"] != crtID) {
+			var InputText = parseText(arrayObj[i].Proprietati["Valoare"]);
+			$("#" + arrayObj[i].Proprietati["ID"] + " input").val(InputText);
+		}
+	}
 }
 
 /*
@@ -2290,7 +2630,7 @@ function convertDataToType(data) {
     - camp inserare                         --partial
     - creaza baza de date/tabel nou(a)      --done
     - formular de adaugare
-    - previzualizare
+    - previzualizare 						--done
 
     BONUS:
     - eticheta border

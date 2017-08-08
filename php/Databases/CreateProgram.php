@@ -124,15 +124,15 @@
         <div id="softContent" class="">
             <div id="topMenuBar">
                 <ul id="menuBar">
-                    <li id="fisierText">Fisier
+                    <li id="fisierText"><span>Fisier</span>
                         <ul id="fisierContent">
-                            <li id="newProgram">Nou</li>
-                            <li id="openProgram">Deschide</li>
-                            <li id="saveProgram">Salveaza</li>
-                            <li id="exitProgram">Iesire</li>
+                            <li id="newProgram"><span>Nou</span></li>
+                            <li id="openProgram"><span>Deschide</span></li>
+                            <li id="saveProgram"><span>Salveaza</span></li>
+                            <li id="exitProgram"><span>Iesire</span></li>
                         </ul>
                     </li>
-                    <li id="viewPreview">Previzualizare</li>
+                    <li id="viewPreview"><span>Previzualizare</span></li>
                 </ul>
                 <div id="status"></div>
             </div>
@@ -162,6 +162,7 @@
         
         <!-- Scripts -->
         <script type="text/javascript" src="../../js/jscolor.js"></script>
+        <script type="text/javascript" src="../../js/math.min.js"></script>
         <script type="text/javascript" src="../../js/createProgram.js"></script>
     </body>
 </html>

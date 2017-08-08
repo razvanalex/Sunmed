@@ -204,10 +204,16 @@ body {
     display: inline-block;
 }
 
+#fisierText ul span {
+	position: relative;
+	top: 5px;
+}
+
 #menuBar li {
     float: left;
     padding: 5px 10px;
     cursor: default;
+    height: 30px;
 }
 
 #menuBar li:hover {

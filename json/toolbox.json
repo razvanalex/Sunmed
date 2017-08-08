@@ -25,7 +25,7 @@
         "Nume": "Camp de inserare",
         "Cod": "<div class='INPUT1'><input class='inputField1' type='text'/></div>",
         "Proprietati": {
-            "ID": "CampDeInserare",
+            "ID": "input",
             "Eticheta": "Fara",
             "Fundal": "FFFFFF",
             "Culoare": "000000",
@@ -95,6 +95,12 @@
             "Data": [ [], [] ],
             "Latime": "600",
             "Inaltime": "400",
+            "Minimum": null,
+            "Maximum": null,
+            "Highlight Start": null,
+            "Highlight End": null,
+            "Highlight Color": "black",
+            "Highlight Opacity": 0,
             "Pozitie": {
                 "X": 0,
                 "Y": 0

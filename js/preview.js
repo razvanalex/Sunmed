@@ -19,7 +19,6 @@ function getObjectArray(file) {
             if (ObjArray[i].Nume == "Grafic") {
                 graphs.push(ObjArray[i]);
                 appendObject(ObjArray[i], "#preview");
-                applyProp(ObjArray[i], null); 
             }
             else {
                 appendObject(ObjArray[i], "#preview");
@@ -59,9 +58,12 @@ function applyProp(data, chart) {
 
     for (var prop in data.Proprietati)
     {
-        if ($(id).find("input").length)
-           id = id + " input";
-        
+        if ($(id).find("input").length) {
+           	id = id + " input";
+			$(id).on("focus", function() {
+				$(this).blur();	
+			});
+        }
         if (prop == "Text") {
             $(id + " span").text(data.Proprietati[prop]);
         }
@@ -166,9 +168,54 @@ function applyProp(data, chart) {
         else if (prop == "Placeholder") {
             $(id).attr("placeholder", data.Proprietati[prop]);
         }
+        else if (prop == "Valoare") {
+            var InputText = parseText(data.Proprietati[prop]);
+            $(id).attr("value", InputText);
+        }
         else if (prop == "Stil") {
             ApplyStyle(data, prop, id);
         }
+         else if (prop == "Title") {
+        	chart.title.set("text", data.Proprietati[prop]);
+        }
+       		else if (prop == "Minimum") {
+			if (data.Proprietati[prop] != null) {
+			    var InputText = parseText(data.Proprietati[prop]);
+			
+				if (data.Proprietati[prop] == "null" || data.Proprietati[prop]== "") 
+					chart.axisY[0].set("minimum", null);
+				else chart.axisY[0].set("minimum", InputText);
+			}
+		}
+		else if (prop == "Maximum") {
+		    if (data.Proprietati[prop] != null) {
+				var InputText = parseText(data.Proprietati[prop]);
+
+				if (data.Proprietati[prop] == "null" || data.Proprietati[prop]== "") 
+		        	chart.axisY[0].set("maximum", null);
+				else chart.axisY[0].set("maximum", InputText);
+		    }
+		}
+		else if (prop == "Highlight Start") {
+			var InputText = parseText(data.Proprietati[prop]);
+		
+			if (data.Proprietati[prop] == "null" || data.Proprietati[prop] == "") 
+		    	chart.axisY[0].stripLines[0].set("startValue", 0);
+			else chart.axisY[0].stripLines[0].set("startValue", +InputText);
+		}
+		else if (prop == "Highlight End") {
+			var InputText = parseText(data.Proprietati[prop]);
+		
+			if (data.Proprietati[prop] == "null" || data.Proprietati[prop] == "") 
+		    	chart.axisY[0].stripLines[0].set("endValue", 0);
+			else chart.axisY[0].stripLines[0].set("endValue", +InputText);
+		}
+		else if (prop == "Highlight Color") {
+		    chart.axisY[0].stripLines[0].set("color", "#" + data.Proprietati[prop]);
+		}
+		else if (prop == "Highlight Opacity") {
+			chart.axisY[0].stripLines[0].set("opacity", data.Proprietati[prop]);
+		}	
         else if (prop == "Pozitie") {
             id = "#" + data.Proprietati.ID;
             $(id).css("position", "absolute");
@@ -179,9 +226,12 @@ function applyProp(data, chart) {
     }
     
     if (data.Nume == "Tabel") { 
-        GenerateTable(data, data.Proprietati.ID);
-    }
+        PrintData(data, data.Proprietati.ID);
 
+        $("#showData").on("click", function() {
+            PrintData(data, data.Proprietati.ID);
+        });
+    }
 }
 
 function getElementsID(ObjArray, type, result) {    
@@ -280,7 +330,11 @@ function initStripLinesY(option, num) {
             value: 0,
             label: "",
             showOnTop: true,
-            opacity: 0
+            opacity: 0, 
+            thickness: 3,
+            labelPlacement: "inside",
+            labelBackgroundColor: "white",
+    		labelFontWeight: "bold"
         }
         stripLines.push(line);
     }
@@ -302,12 +356,12 @@ function initChart(Prop) {
         },
         data: [ 
             {
-                type: "line",
+                type: "line", 
                 dataPoints: []
             }
         ]
     };
-    initStripLinesY(options, 10);
+    initStripLinesY(options, 15);
     
     var chart = new CanvasJS.Chart(Prop["ID"], options);
     chart.render();
@@ -315,7 +369,7 @@ function initChart(Prop) {
     return chart;
 }
 
-function GenerateTable(obj, ID) {
+function GenerateTable(obj, ID, whereClause) {
     $("#" + obj.Proprietati.ID).css("width", "auto");
     $("#" + obj.Proprietati.ID).css("heigth", "auto");
     
@@ -332,10 +386,10 @@ function GenerateTable(obj, ID) {
     $("#" + obj.Proprietati.ID + " thead").append(TR);
     
     var location = "#" + obj.Proprietati.ID + " tbody";
-    getDataFromServer(obj, location);
+    getDataFromServer(obj, location, whereClause);
 }
 
-function getDataFromServer(obj, location) {
+function getDataFromServer(obj, location, whereClause) {
     $.getJSON("../../json/tabele.json", function(data) {
         var campuri = obj.Proprietati["Campuri"];
         var fields = [];
@@ -351,7 +405,7 @@ function getDataFromServer(obj, location) {
                 }
             }
         }
-        
+
         $.ajax({
             url: "../../php/Data/CP_genTable.php",
             method: 'POST',
@@ -360,7 +414,8 @@ function getDataFromServer(obj, location) {
                 DBName: obj.Proprietati["Baza de date"],
                 tableName: obj.Proprietati["Tabel"],
                 tableFields: fields,
-                tableAlias: obj.Proprietati["Campuri"]
+                tableAlias: obj.Proprietati["Campuri"], 
+                whereClause: whereClause
             },
             success: function(data) {
                 $(location).append(data);
@@ -475,8 +530,8 @@ function applyDataChart(obj, chart) {
             var value = stripLines[i].value;
             var label = stripLines[i].label;
             var color = stripLines[i].color;
-            
-            addStripLineToGraph(chart, i, value, label, color);
+
+            addStripLineToGraph(chart, i + 1, value, label, color);
         }
     }
 }
@@ -484,14 +539,14 @@ function applyDataChart(obj, chart) {
 function isValidDate(dateString)
 {
     // First check for the pattern
-    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
         return false;
 
     // Parse the date parts to integers
-    var parts = dateString.split("-");
-    var day = parseInt(parts[2], 10);
+    var parts = dateString.split("/");
+    var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
-    var year = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
 
     // Check the ranges of month and year
     if(year < 1000 || year > 3000 || month == 0 || month > 12)
@@ -510,20 +565,20 @@ function isValidDate(dateString)
 function convertToDate(dateString)
 {
     // First check for the pattern
-    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(dateString))
+    if(!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateString))
         return null;
 
     // Parse the date parts to integers
-    var parts = dateString.split("-");
-    var day = parseInt(parts[2], 10);
+    var parts = dateString.split("/");
+    var day = parseInt(parts[0], 10);
     var month = parseInt(parts[1], 10);
-    var year = parseInt(parts[0], 10);
+    var year = parseInt(parts[2], 10);
 
     return new Date(year, month - 1, day);
 }
 
 function isValidNumber(n) {
-    if(!/^[0-9]+$/.test(n))
+     if(!/^[0-9]+(\.[0-9]+)?$/.test(n))
         return false; 
     return true;
 }
@@ -540,11 +595,396 @@ function convertDataToType(data) {
     return data;
 }
 
+function convertValueToType(data) {
+    if (isValidDate(data)) {
+        return convertToDate(data);
+    }
+    else if(isValidNumber(data)){
+        return +data; 
+    }               
+}
+
+function interpretData(variable) {
+	var table;
+	
+	if (variable.match(/input[0-9]+/)) {
+		if ($("#" + variable).length > 0) {
+			variable = $("#" + variable  + " input").val();
+			variable = convertValueToType(variable);
+		}
+	}
+	else if (variable.match(/table[0-9]+/)) {
+		var tableID;
+		var tableData = variable.substr(variable.indexOf(":") + 1);
+		
+		if (variable.indexOf(":") > 0) 
+			tableID = variable.substr(0, variable.indexOf(":"));
+		else tableID = variable;
+		
+		if ($("#" + tableID).length > 0) {
+			var functionData;
+			
+			if (tableData.match(/col\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				var colHTML;
+				var colArray = [];
+				
+				if (functionData == "@first") {
+					colHTML = "#" + tableID + " tbody tr td:first-child";	
+				}
+				else if (functionData == "@last") {
+					colHTML = "#" + tableID + " tbody tr td:last-child";	
+				}
+				else colHTML = "#" + tableID + " tbody tr td:nth-child(" + functionData + ")";	
+				
+				if($(colHTML).length > 0) {
+					$.each($(colHTML), function() {
+						colArray.push($(this)[0].innerHTML);
+					});
+					colArray = convertDataToType(colArray);
+					variable = colArray;
+				}
+			}
+			else if (tableData.match(/row\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				var rowHTML;
+				var rowArray = [];				
+				
+				if (functionData == "@first") {
+					rowHTML = "#" + tableID + " tbody tr:first td";	
+				}
+				else if (functionData == "@last") {
+					rowHTML = "#" + tableID + " tbody tr:last td";	
+				}
+				else rowHTML = "#" + tableID + " tbody tr:eq(" + (+functionData - 1) + ") td";
+
+				
+				if($(rowHTML).length > 0) {
+					$.each($(rowHTML), function() {
+						rowArray.push($(this)[0].innerHTML);
+					});
+					rowArray = convertDataToType(rowArray);
+					variable = rowArray;
+				}
+				
+			}
+			else if (tableData.match(/data\([^()]+\)/)) {
+				functionData = tableData.match(/\([^()]+\)/)[0];
+				functionData = functionData.substring(1, functionData.length - 1);
+				
+				var colIndex = functionData.split(",")[0];
+				var rowIndex = functionData.split(",")[1];
+				var dataHTML;
+				var dataValue;
+				
+				if (colIndex == "@first") {
+					colIndex = "td:first-child";	
+				}
+				else if (colIndex == "@last") {
+					colIndex = "td:last-child";		
+				}
+				else colIndex = "td:nth-child(" + colIndex + ")";
+				
+				if (rowIndex == "@first") {
+					rowIndex = "tr:first-child";	
+				}
+				else if (rowIndex == "@last") {
+					rowIndex = "tr:last-child";		
+				}
+				else rowIndex = "tr:eq(" + (+rowIndex - 1) + ")";
+				
+				dataHTML = "#" + tableID + " tbody " + rowIndex + " " + colIndex;
+		
+				if($(dataHTML).length > 0) {
+					dataValue = $(dataHTML)[0].innerHTML;
+					dataValue = convertValueToType(dataValue);
+					variable = dataValue;
+				}
+			}
+		}
+	}
+	
+	return variable;
+}
+
+function parseText(string) {
+	if (string[0] == "=") {
+		var vars = string.match(/#[^#]+#/g);
+				
+		if (vars) {
+			var numOfVars = vars.length;
+
+			for (var i = 0; i < vars.length; i++) {
+				vars[i] = vars[i].substring(1, vars[i].length - 1);
+				vars[i] = interpretData(vars[i]);
+			}
+
+			for (var j = 0; j < numOfVars; j++) {
+				if (vars[j].constructor === Array)
+					string = string.replace(/#[^#]+#/, "[" + vars[j]+ "]");
+				else string = string.replace(/#[^#]+#/, vars[j]);
+			}
+		}
+		string = string.substring(1, string.length);
+		string = math.eval(string);
+	}
+	
+	return string;
+}
+
+function initDatePicker() {
+    $(".PickDate").datepicker({ 
+        dateFormat: "dd/mm/yy",
+        altFormat: "dd/mm/yy",
+        maxDate: '0',
+        constrainInput: true,   // prevent letters in the input field
+        firstDay: 1 // Start with Monday
+        });
+
+    $("#EndDate").datepicker("setDate", new Date());
+
+    var d = new Date();
+    var length = 30;
+
+    d.setDate(d.getDate() - length);
+    $("#StartDate").datepicker("setDate", d);
+
+    $(".PickDate").on("click", function() {
+        $(this).datepicker();
+    });
+}
+
+function DateAndTimeShow() {
+    var today = new Date();
+    var D = today.getDate();
+    var M = today.getMonth();
+    var Y = today.getFullYear();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    M += 1;
+    M = checkTime(M);
+    D = checkTime(D);
+
+    var dateAndTime = D + "/" + M + "/" + Y + "  " + h + ":" + m + ":" + s;
+
+    $("#currentDate").text(dateAndTime);
+
+    var t = setTimeout(DateAndTimeShow, 500);
+}
+
+function checkTime(i) {
+    if (i < 10) {
+        i = "0" + i;// add zero in front of numbers < 10
+    }
+    return i;
+}
+function convertToStdDate(date) {
+    var D = date.getDate();
+    var M = date.getMonth();
+    var Y = date.getFullYear();
+    M += 1;
+    M = checkTime(M);
+    D = checkTime(D);
+    return Y + "-" + M + "-" + D;
+}
+
+function PrintData(data, ID) {
+    var where = "";
+    var start = $("#StartDate").datepicker('getDate');
+    var end = $("#EndDate").datepicker('getDate');
+   
+    start = convertToStdDate(start);
+    end = convertToStdDate(end);
+    where = "data >='" + start + " 00:00:00' AND data <'" + end + " 00:00:00' ";
+
+    GenerateTable(data, ID, where);
+}
+
+function createObjToPDF(text, size, font, x, y) {
+	var object = {
+		"text": text,
+		"font-size": size,
+		"font-family": font,
+		"position": {
+			"X": x,
+			"Y": y
+		}
+	}
+
+	return object;
+}
+
+function loadText() {
+	var cod				= createObjToPDF(
+								$("#Eticheta span").text(), 
+								12, "Arial", 0, 0);
+	var text1			= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var analitText		= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var analitVal		= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var analizorText	= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var analizorVal		= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var antet1			= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var serText			= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var serVal1			= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var serVal2			= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var valTintaText	= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var valTintaVal		= createObjToPDF(
+								$("#input input").val(), 		
+								12, "Arial", 0, 0);
+	var valAdmisText	= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var valAdmisMin		= createObjToPDF(
+								$("#input input").val(), 		
+								12, "Arial", 0, 0);
+	var valAdmisMax		= createObjToPDF(
+								$("#input input").val(), 		
+								12, "Arial", 0, 0);
+	var devStdText		= createObjToPDF(
+								$("#Eticheta span").text(), 	
+								12, "Arial", 0, 0);
+	var devStdVal		= createObjToPDF(
+								$("#input input").val(), 		
+								12, "Arial", 0, 0);
+	
+	var sd1Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	var SD1Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	var sd2Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	var SD2Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	var sd3Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	var SD3Text	= createObjToPDF(
+						$("#Eticheta span").text(),
+						12, "Arial", 0, 0);
+	
+	var sd1Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+	var SD1Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+	var sd2Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+	var SD2Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+	var sd3Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+	var SD3Val	= createObjToPDF(
+						$("#input input").val(),
+						12, "Arial", 0, 0);
+		
+	var TextToLoad = [	
+		cod, text1, analitText, analitVal, analizorText, analizorVal, 
+		antet1, serText, serVal1, serVal2, valTintaText, valTintaVal, 
+		valAdmisText, valAdmisMin, valAdmisMax, devStdText, devStdVal,
+		sd1Text, SD1Text, sd2Text, SD2Text, sd3Text, SD3Text, 
+		sd1Val, SD1Val, sd2Val, SD2Val, sd3Val, SD3Val
+	];
+	
+	return TextToLoad;
+}
+
+function getImageFromUrl(url, callback) {
+	var img = new Image, data, ret={data: null, pending: true};
+	
+	img.onError = function() {
+		throw new Error('Cannot load image: "'+url+'"');
+	}
+	img.onload = function() {
+		var canvas = document.createElement('canvas');
+		document.body.appendChild(canvas);
+		canvas.width = img.width;
+		canvas.height = img.height;
+
+		var ctx = canvas.getContext('2d');
+		ctx.drawImage(img, 0, 0);
+		// Grab the image as a jpeg encoded in base64, but only the data
+		data = canvas.toDataURL('image/PNG').slice('data:image/png;base64,'.length);
+		// Convert the data to binary form
+		data = atob(data)
+		document.body.removeChild(canvas);
+
+		ret['data'] = data;
+		ret['pending'] = false;
+		if (typeof callback === 'function') {
+			callback(data);
+		}
+	}
+	img.src = url;
+
+	return ret;
+}
+
+function exportAsPDF() {
+    $("#exportData").on("click", function() {
+    	var pdf = new jsPDF("l", "mm", "a4");		
+		var LogoUrl = $("#logo").attr("src");
+		getImageFromUrl(LogoUrl, function(imgData) {
+			pdf.addImage(imgData, 'PNG', 10, 10, 30, 14);
+			
+			/*var text = loadText();
+			for (var i = 0; i < text.length; i++) {
+				pdf.setFontSize(text[i]["font-size"]);
+				pdf.setFont(text[i]["font-family"]);
+				pdf.text(text[i]["position"].X, 
+						 text[i]["position"].Y, 
+						 text[i]["text"]);
+			}*/
+			
+			var canvas = $("#Grafic39 .canvasjs-chart-canvas").get(0);
+			var graphImage = canvas.toDataURL();
+			pdf.addImage(graphImage, 'JPEG', 0, 0);
+			pdf.save("test.pdf");
+	    });
+	});
+}
+
 function main() {
     var $_GET = getQueryParams(document.location.search);
     var programName = $_GET["program"];
 
     getObjectArray(programName);
+
+    initDatePicker();
+    DateAndTimeShow();
+    exportAsPDF();
 }
 
 $(document).ready(main());
