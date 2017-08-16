@@ -32,6 +32,17 @@
             </div>
         </div>
         
+        <!-- Create Database Window -->
+        <div class="window" id="addRegister">
+            <div class="topWindow">
+                <span class="title">Adaugare</span>
+                <div class="close" id="closeAddRegister"></div>
+            </div>
+            <div class="contentWindow">
+                
+            </div>
+        </div>
+
         <!-- Scripts -->
         <script type="text/javascript" src="../../js/math.min.js"></script>
         <script type="text/javascript" src="../../js/preview.js"></script>

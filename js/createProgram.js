@@ -2627,10 +2627,7 @@ function updateInputs(arrayObj, crtID) {
 
 /*
     TODO:
-    - camp inserare                         --partial
-    - creaza baza de date/tabel nou(a)      --done
     - formular de adaugare
-    - previzualizare 						--done
 
     BONUS:
     - eticheta border

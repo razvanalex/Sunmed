@@ -329,7 +329,7 @@ function initStripLinesY(option, num) {
         var line = {
             value: 0,
             label: "",
-            showOnTop: true,
+            showOnTop: false,
             opacity: 0, 
             thickness: 3,
             labelPlacement: "inside",
@@ -354,6 +354,11 @@ function initChart(Prop) {
         axisY:{
             includeZero: false
         },
+		axisX: {
+			interval: 1,
+			labelAngle: -70,
+			valueFormatString: "DD/MM/YYYY"
+		},
         data: [ 
             {
                 type: "line", 
@@ -448,7 +453,6 @@ function findSQLFields(alias, tabel) {
     return fields;
 }
 
-
 function addStripLineToGraph(chart, index, value, label, color) {
     chart.axisY[0].stripLines[index].set("value", value);
     chart.axisY[0].stripLines[index].set("label", label);
@@ -461,9 +465,11 @@ function addDataPointsToGraph(chart, data) {
         var X, Y, col = 0;
 
         $("#" + data[i].Table + " thead td").each(function() {
-            col++;            
+            col++;  
+                      
             if ($(this).text() == data[i].DataX) {
                 var colX = "#" + data[i].Table + ' tbody td:nth-child(' + col + ')';
+
                 X = $(colX).map(function(){
                     return $(this).text();
                 }).get();
@@ -494,6 +500,7 @@ function addDataPointsToGraph(chart, data) {
                         && data[i].Type !="stackedBar100"
                         && data[i].Type != "doughnut") {
                     newSeries.color = data[i].Color;
+					newSeries.markerSize = 7;
                 }
                 else { 
                     newSeries.colorSet = "colorset1";
@@ -503,6 +510,29 @@ function addDataPointsToGraph(chart, data) {
                     var dPoint = {x: X[j], y: Y[j]};
                     dataPoints.push(dPoint);
                 }
+				var len = dataPoints.length;
+				if (len > 0) {
+					var interval = X[len - 1].getTime() - X[0].getTime();
+					var timeDiff = Math.abs(interval);
+					var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+					if (diffDays < 32) {
+						chart.axisX[0].set("intervalType", "day");
+						chart.axisX[0].set("interval", 1);
+					}
+					else if (diffDays >= 32 && diffDays < 64) {
+						chart.axisX[0].set("intervalType", "day");
+						chart.axisX[0].set("interval", 2);
+					}
+					else if (diffDays >= 64 && diffDays < 365 * 3) {
+						chart.axisX[0].set("intervalType", "month");
+						chart.axisX[0].set("interval", 1);
+					}
+					else {
+						chart.axisX[0].set("intervalType", "year");
+						chart.axisX[0].set("interval", 1);
+					}
+				}
+
                 newSeries.dataPoints = dataPoints;
                 newSeries.showInLegend = true;
                 newSeries.legendText = data[i].DataY;
@@ -779,7 +809,7 @@ function DateAndTimeShow() {
 
 function checkTime(i) {
     if (i < 10) {
-        i = "0" + i;// add zero in front of numbers < 10
+        i = "0" + i; // add zero in front of numbers < 10
     }
     return i;
 }
@@ -801,15 +831,16 @@ function PrintData(data, ID) {
     start = convertToStdDate(start);
     end = convertToStdDate(end);
     where = "data >='" + start + " 00:00:00' AND data <'" + end + " 00:00:00' ";
-
+	
     GenerateTable(data, ID, where);
 }
 
-function createObjToPDF(text, size, font, x, y) {
+function createObjToPDF(text, size, font, bold, x, y) {
 	var object = {
 		"text": text,
 		"font-size": size,
 		"font-family": font,
+		"bold": bold,
 		"position": {
 			"X": x,
 			"Y": y
@@ -821,99 +852,97 @@ function createObjToPDF(text, size, font, x, y) {
 
 function loadText() {
 	var cod				= createObjToPDF(
-								$("#Eticheta span").text(), 
-								12, "Arial", 0, 0);
+								$("#Eticheta1 span").text(), 
+								12, "Arial", true, 55, 20);
 	var text1			= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta2 span").text(), 	
+								16, "Arial", true, 20, 32);
 	var analitText		= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta3 span").text(), 	
+								12, "Arial", false, 20, 50);
 	var analitVal		= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta4 span").text(), 	
+								12, "Arial", true, 60, 50);
 	var analizorText	= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta5 span").text(), 	
+								12, "Arial", false, 20, 55);
 	var analizorVal		= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta6 span").text(), 	
+								12, "Arial", true, 60, 55);
 	var antet1			= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta7 span").text(), 	
+								14, "Arial", true, 50, 65);
 	var serText			= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta8 span").text(), 	
+								12, "Arial", false, 20, 72);
 	var serVal1			= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta9 span").text(), 	
+								10, "Arial", true, 70, 70);
 	var serVal2			= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta10 span").text(), 	
+								10, "Arial", true, 70, 75);
 	var valTintaText	= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta11 span").text(), 	
+								12, "Arial", false, 20, 80);
 	var valTintaVal		= createObjToPDF(
-								$("#input input").val(), 		
-								12, "Arial", 0, 0);
+								$("#input12 input").val(), 		
+								12, "Arial", true, 70, 80);
 	var valAdmisText	= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
-	var valAdmisMin		= createObjToPDF(
-								$("#input input").val(), 		
-								12, "Arial", 0, 0);
-	var valAdmisMax		= createObjToPDF(
-								$("#input input").val(), 		
-								12, "Arial", 0, 0);
+								$("#Eticheta13 span").text(), 	
+								12, "Arial", false, 20, 85);
+	var valAdmisVal		= createObjToPDF(
+								$("#input14 input").val() + " - " + 
+								$("#input15 input").val(), 		
+								12, "Arial", true, 70, 85);
 	var devStdText		= createObjToPDF(
-								$("#Eticheta span").text(), 	
-								12, "Arial", 0, 0);
+								$("#Eticheta16 span").text(), 	
+								12, "Arial", false, 20, 90);
 	var devStdVal		= createObjToPDF(
-								$("#input input").val(), 		
-								12, "Arial", 0, 0);
+								$("#input17 input").val(), 		
+								12, "Arial", true, 70, 90);
 	
 	var sd1Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta18 span").text() + ":",
+						12, "Arial", false, 20, 100);
 	var SD1Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta20 span").text() + ":",
+						12, "Arial", false, 70, 100);
 	var sd2Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta22 span").text() + ":",
+						12, "Arial", false, 20, 105);
 	var SD2Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta24 span").text() + ":",
+						12, "Arial", false, 70, 105);
 	var sd3Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta26 span").text() + ":",
+						12, "Arial", false, 20, 110);
 	var SD3Text	= createObjToPDF(
-						$("#Eticheta span").text(),
-						12, "Arial", 0, 0);
+						$("#Eticheta28 span").text() + ":",
+						12, "Arial", false, 70, 110);
 	
 	var sd1Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input19 input").val(),
+						12, "Arial", true, 40, 100);
 	var SD1Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input21 input").val(),
+						12, "Arial", true, 90, 100);
 	var sd2Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input23 input").val(),
+						12, "Arial", true, 40, 105);
 	var SD2Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input25 input").val(),
+						12, "Arial", true, 90, 105);
 	var sd3Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input27 input").val(),
+						12, "Arial", true, 40, 110);
 	var SD3Val	= createObjToPDF(
-						$("#input input").val(),
-						12, "Arial", 0, 0);
+						$("#input29 input").val(),
+						12, "Arial", true, 90, 110);
 		
 	var TextToLoad = [	
 		cod, text1, analitText, analitVal, analizorText, analizorVal, 
 		antet1, serText, serVal1, serVal2, valTintaText, valTintaVal, 
-		valAdmisText, valAdmisMin, valAdmisMax, devStdText, devStdVal,
+		valAdmisText, valAdmisVal, devStdText, devStdVal,
 		sd1Text, SD1Text, sd2Text, SD2Text, sd3Text, SD3Text, 
 		sd1Val, SD1Val, sd2Val, SD2Val, sd3Val, SD3Val
 	];
@@ -957,21 +986,32 @@ function exportAsPDF() {
     	var pdf = new jsPDF("l", "mm", "a4");		
 		var LogoUrl = $("#logo").attr("src");
 		getImageFromUrl(LogoUrl, function(imgData) {
-			pdf.addImage(imgData, 'PNG', 10, 10, 30, 14);
+			pdf.addImage(imgData, 'PNG', 20, 10, 30, 14);
 			
-			/*var text = loadText();
+			var text = loadText();
 			for (var i = 0; i < text.length; i++) {
 				pdf.setFontSize(text[i]["font-size"]);
 				pdf.setFont(text[i]["font-family"]);
+				if (text[i]["bold"]) {
+					pdf.setFontType("bold");
+				}
+				else {
+					pdf.setFontType("normal");	
+				}
+				var splitText = pdf.splitTextToSize(text[i]["text"], 
+								130 - text[i]["position"].X);
 				pdf.text(text[i]["position"].X, 
 						 text[i]["position"].Y, 
-						 text[i]["text"]);
-			}*/
+						 splitText);
+			}
 			
-			var canvas = $("#Grafic39 .canvasjs-chart-canvas").get(0);
+			var canvas = $("#Grafic33 .canvasjs-chart-canvas").get(0);
 			var graphImage = canvas.toDataURL();
-			pdf.addImage(graphImage, 'JPEG', 0, 0);
-			pdf.save("test.pdf");
+            pdf.addImage(graphImage, 'JPEG', 130, 20, 150, 90);
+
+            pdf.fromHTML("#table32 table");
+
+            pdf.save("test.pdf");
 	    });
 	});
 }
